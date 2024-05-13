@@ -49,7 +49,7 @@
                 <i class="bi bi-clock"></i> Monday - Sunday, 8AM to 10PM
             </div>
             <div class="d-flex align-items-center">
-                <i class="bi bi-phone"></i> Call us now +1 5589 55488 55
+                <i class="bi bi-phone"></i> Call us now +63998993833 
             </div>
         </div>
     </div>
