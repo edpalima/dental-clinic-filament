@@ -17,7 +17,7 @@ class ProcedureResource extends Resource
 {
     protected static ?string $model = Procedure::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
+    protected static ?string $navigationIcon = 'heroicon-o-beaker';
 
     public static function form(Form $form): Form
     {
