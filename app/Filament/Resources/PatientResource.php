@@ -54,10 +54,10 @@ class PatientResource extends Resource
                         ->maxLength(255)
                         ->required(),
                     Forms\Components\TextInput::make('contact_no')
-                    ->integer()
-                    ->maxLength(255)
-                    ->default(null),
-                    
+                        ->integer()
+                        ->maxLength(255)
+                        ->default(null),
+
                     Forms\Components\TextInput::make('address')
                         ->maxLength(255)
                         ->default(null)
@@ -238,86 +238,20 @@ class PatientResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('middle_name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('last_name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nickname')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('religion')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nationality')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('gender'),
-                Tables\Columns\TextColumn::make('occupation')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('dental_insurance')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('insurance_effective_date')
-                    ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('address')
+                Tables\Columns\TextColumn::make('gender')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contact_no')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('guardian_name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('guardian_occupation')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('referrer')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('reason')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('previous_dentist')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('last_dental_visit')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_good_health')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_medical_treatment')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('is_medical_treatment_name')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_illness_operated')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('is_illness_operated_name')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_hospitalized')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('is_hospitalized_name')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_has_medication')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('is_has_medication_name')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_using_tobacco')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_has_vice')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('allergic_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('bleeding_time')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_pregnant')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_nursing')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('is_taking_pills')
-                    ->boolean(),
-                Tables\Columns\TextColumn::make('blood_type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('blood_pressure')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('check_illness')
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('check_consent')
-                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

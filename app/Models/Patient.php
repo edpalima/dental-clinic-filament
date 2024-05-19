@@ -53,4 +53,8 @@ class Patient extends Model
     ];
 
     protected $hidden = ['password'];
+
+    protected $casts = [
+        'check_illness' => 'array',
+    ];
 }
