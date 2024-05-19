@@ -228,7 +228,7 @@ class PatientResource extends Resource
                 ])->columns(1),
 
                 Forms\Components\Checkbox::make('check_consent')
-                    ->label('Notice of Consents')
+                    ->label(fn () => new HtmlString('I accept the <a href="/consent-agreement" target="_blank" style="color: red">Consents Agreement</a>'))
                     ->accepted(),
             ]);
     }
@@ -287,8 +287,8 @@ class PatientResource extends Resource
         return [
             'index' => Pages\ListPatients::route('/'),
             'create' => Pages\CreatePatient::route('/create'),
-            'view' => Pages\ViewPatient::route('/{record}'),
-            'edit' => Pages\EditPatient::route('/{record}/edit'),
+            // 'view' => Pages\ViewPatient::route('/{record}'),
+            // 'edit' => Pages\EditPatient::route('/{record}/edit'),
         ];
     }
 }
