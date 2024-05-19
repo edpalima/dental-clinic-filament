@@ -42,7 +42,7 @@ class ProcedureResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cost')
-                    ->money()
+                    ->prefix('₱')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
