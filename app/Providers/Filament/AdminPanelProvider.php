@@ -36,6 +36,8 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Orange,
             ])
             ->font('Poppins')
+
+            ->darkMode(false)
             ->brandLogo(asset('assets/img/logo.png'))
             ->favicon(asset('assets/img/logo-circle.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

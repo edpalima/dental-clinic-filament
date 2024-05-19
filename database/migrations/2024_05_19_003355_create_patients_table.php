@@ -1,0 +1,70 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('patients', function (Blueprint $table) {
+            $table->id();
+            $table->string('first_name');
+            $table->string('middle_name')->nullable();
+            $table->string('last_name');
+            $table->string('nickname')->nullable();
+            $table->string('religion')->nullable();
+            $table->string('nationality')->nullable();
+            $table->enum('gender', ['male', 'female']);
+            $table->string('occupation')->nullable();
+            $table->string('dental_insurance')->default(false);
+            $table->date('insurance_effective_date')->nullable();
+            $table->string('address')->nullable();
+            $table->string('contact_no')->nullable();
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->string('guardian_name')->nullable();
+            $table->string('guardian_occupation')->nullable();
+            $table->string('referrer')->nullable();
+            $table->string('reason')->nullable();
+            $table->string('previous_dentist')->nullable();
+            $table->date('last_dental_visit')->nullable();
+
+
+
+            $table->boolean('is_good_health')->default(true);
+            $table->boolean('is_medical_treatment')->default(false);
+            $table->string('is_medical_treatment_name')->nullable();
+            $table->boolean('is_illness_operated')->default(false);
+            $table->string('is_illness_operated_name')->nullable();
+            $table->boolean('is_hospitalized')->default(false);
+            $table->string('is_hospitalized_name')->nullable();
+            $table->boolean('is_has_medication')->default(false);
+            $table->string('is_has_medication_name')->nullable();
+            $table->boolean('is_using_tobacco')->default(false);
+            $table->boolean('is_has_vice')->default(false);
+            $table->unsignedBigInteger('allergic_id')->nullable();
+            $table->string('bleeding_time')->nullable();
+            $table->boolean('is_pregnant')->default(false);
+            $table->boolean('is_nursing')->default(false);
+            $table->boolean('is_taking_pills')->default(false);
+            $table->string('blood_type')->nullable();
+            $table->string('blood_pressure')->nullable();
+            $table->string('check_illness')->nullable();
+            $table->boolean('check_consent')->default(false);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('patients');
+    }
+};
