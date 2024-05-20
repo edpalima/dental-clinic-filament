@@ -23,7 +23,7 @@
                 <!-- Slide 2 -->
                 <div class="carousel-item" style="background-image: url({{ URL::to('assets/img/slide/slide-2.jpg') }})">
                     <div class="container">
-                        <h2>Your Smile, Our Passion</h2>
+                        <h2>Our Passion, Your Smile</h2>
                         <p>Almoro Santiago Dental Clinic is committed to making your smile our top priority. Our
                             experienced team provides compassionate care and innovative treatments tailored to your
                             unique needs.</p>
