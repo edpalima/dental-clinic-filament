@@ -19,12 +19,17 @@ class DoctorResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
+    protected static ?string $navigationGroup = 'People';
+
+    protected static ?int $navigationSort = 2;
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('first_name')
                     ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('middle_name')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('last_name')
                     ->required()
@@ -39,7 +44,7 @@ class DoctorResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-            ]);
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table

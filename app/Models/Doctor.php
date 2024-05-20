@@ -16,4 +16,9 @@ class Doctor extends Model
         'email',
         'contact_no'
     ];
+
+    public function getFullnameAttribute()
+    {
+        return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+    }
 }

@@ -57,4 +57,9 @@ class Patient extends Model
     protected $casts = [
         'check_illness' => 'array',
     ];
+
+    public function getFullnameAttribute()
+    {
+        return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
+    }
 }

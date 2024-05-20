@@ -133,4 +133,6 @@
 
         </div>
     </section>
+
+    {{-- <livewire:patient-register-form /> --}}
 @endsection

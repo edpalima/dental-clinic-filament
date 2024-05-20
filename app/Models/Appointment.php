@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,8 +14,15 @@ class Appointment extends Model
         'patient_id',
         'doctor_id',
         'procedure_id',
-        'appointment_date',
-        'notes'
+        'date',
+        'time',
+        'notes',
+        'payment_options',
+        'amount',
+        'account_number',
+        'reference_number',
+        'status',
+        'approved_by',
     ];
 
     public function patient()

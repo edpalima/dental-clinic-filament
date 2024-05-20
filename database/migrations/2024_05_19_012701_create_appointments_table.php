@@ -16,11 +16,16 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
             $table->foreignId('procedure_id')->constrained()->onDelete('cascade');
-            $table->dateTime('appointment_date');
+            $table->date('date');
+            $table->time('time');
             $table->text('notes')->nullable();
+            $table->string('payment_options')->nullable();
+            $table->string('amount')->nullable();
+            $table->string('account_number')->nullable();
+            $table->string('reference_number')->nullable();
+            $table->string('status')->nullable();
+            $table->string('approved_by')->nullable();
             $table->timestamps();
-
-            $table->unique(['doctor_id', 'appointment_date']); // Ensure unique appointment per doctor and time slot
         });
     }
 

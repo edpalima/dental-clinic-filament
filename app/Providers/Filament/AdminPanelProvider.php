@@ -27,6 +27,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // ->registration()
+            ->passwordReset()
+            ->emailVerification()
+            ->profile()
             ->colors([
                 'danger' => Color::Red,
                 'gray' => Color::Slate,
@@ -37,7 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->font('Poppins')
 
-            ->darkMode(false)
+            // ->darkMode(true)
             ->brandLogo(asset('assets/img/logo.png'))
             ->favicon(asset('assets/img/logo-circle.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
