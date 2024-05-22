@@ -27,7 +27,7 @@
                         <p>Almoro Santiago Dental Clinic is committed to making your smile our top priority. Our
                             experienced team provides compassionate care and innovative treatments tailored to your
                             unique needs.</p>
-                        <a href="{{ route('register') }} class="btn-get-started scrollto">Make An Appointment</a>
+                        <a href="{{ route('register') }}" class="btn-get-started scrollto">Make An Appointment</a>
                     </div>
                 </div>
 
