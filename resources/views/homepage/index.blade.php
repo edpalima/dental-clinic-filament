@@ -16,7 +16,7 @@
                         <p>At Almoro Santiago Dental Clinic, we're dedicated to brightening smiles and improving lives.
                             With personalized care and advanced treatments, we'll help you achieve optimal oral health
                             and confidence in your smile.</p>
-                        <a href="#about" class="btn-get-started scrollto">Make An Appointment</a>
+                        <a href="{{ route('register') }}" class="btn-get-started scrollto">Make An Appointment</a>
                     </div>
                 </div>
 
@@ -27,7 +27,7 @@
                         <p>Almoro Santiago Dental Clinic is committed to making your smile our top priority. Our
                             experienced team provides compassionate care and innovative treatments tailored to your
                             unique needs.</p>
-                        <a href="#about" class="btn-get-started scrollto">Make An Appointment</a>
+                        <a href="{{ route('register') }} class="btn-get-started scrollto">Make An Appointment</a>
                     </div>
                 </div>
 
@@ -38,7 +38,7 @@
                         <p>At Almoro Santiago Dental Clinic, we specialize in crafting radiant smiles that light up your
                             life. From routine care to cosmetic enhancements, trust us to keep your smile healthy and
                             beautiful.</p>
-                        <a href="#about" class="btn-get-started scrollto">Make An Appointment</a>
+                        <a href="{{ route('register') }}" class="btn-get-started scrollto">Make An Appointment</a>
                     </div>
                 </div>
 
@@ -107,7 +107,7 @@
                     <h3>In an emergency? Need help now?</h3>
                     <p> We're here for you. Contact Almoro Santiago Dental Clinic immediately for urgent dental care.
                         Your health and comfort are our top priorities.</p>
-                    <a class="cta-btn scrollto" href="#appointment">Make an Make an Appointment</a>
+                    <a class="cta-btn scrollto" href="{{ route('register') }}">Make an Appointment</a>
                 </div>
 
             </div>

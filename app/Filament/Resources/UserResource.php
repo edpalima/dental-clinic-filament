@@ -47,6 +47,10 @@ class UserResource extends Resource
                         ->visible(fn ($livewire) => $livewire instanceof CreateUser)
                         ->rule(Password::default())
                         ->maxLength(255),
+                    TextInput::make('role')
+                        ->default('ADMIN')
+                        ->password()
+                        ->visible(false),
                 ]),
 
                 Section::make('User New Password')->schema([

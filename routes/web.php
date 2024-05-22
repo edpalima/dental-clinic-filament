@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('homepage.index');
 });
 
+Route::get('/patient-registration', function () {
+    return view('patient-registration.index');
+})->name('register');;
+
 Route::get('/consent-agreement', function () {
     return view('privacy-policy.index');
 });
