@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Procedure;
+use App\Models\Time;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Wizard;
@@ -18,6 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 
 class AppointmentResource extends Resource
 {
@@ -49,15 +51,33 @@ class AppointmentResource extends Resource
                 Wizard::make([
                     Wizard\Step::make('Schedule')
                         ->schema([
+                            // Forms\Components\DatePicker::make('date')
+                            //     ->required()
+                            //     ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
+                            //     ->disabledDates($bookedDates), // Disable already booked dates
+                            // Forms\Components\Select::make('time')
+                            //     ->options(self::getAvailableTimes($bookedTimes))
+                            //     ->required(),
+
                             Forms\Components\DatePicker::make('date')
                                 ->required()
+                                ->live()
                                 ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
-                                ->disabledDates($bookedDates), // Disable already booked dates
-                            Forms\Components\Select::make('time')
-                                ->options(self::getAvailableTimes($bookedTimes))
-                                ->required(),
+                                ->afterStateUpdated(fn ($state, callable $get, callable $set) => $set('time_id', null)),
+                            Forms\Components\Radio::make('time_id')
+                                ->label('Appointment Time')
+                                ->options(function (callable $get) {
+                                    // $selectedDate = $get('date');
+                                    // if ($selectedDate) {
+                                    //     $takenTimeIds = Appointment::whereDate('date', $selectedDate)->pluck('time_id')->toArray();
+                                    //     return Time::whereNotIn('id', $takenTimeIds)->pluck('name', 'id');
+                                    // }
+                                    return Time::pluck('name', 'id');
+                                })
+                                ->hidden(fn (callable $get) => !$get('date'))
+                                ->required(fn (callable $get) => $get('date') !== null),
                         ]),
-                    Wizard\Step::make('Assign People')
+                    Wizard\Step::make('Assign')
                         ->schema([
                             $user->role == 'ADMIN' ?
                                 Forms\Components\Select::make('patient_id')
@@ -91,11 +111,17 @@ class AppointmentResource extends Resource
                                     if ($state === 'gcash') {
                                         $set('account_number_visible', true);
                                         $set('reference_number_visible', true);
+                                        $set('documentation', true);
                                     } else {
                                         $set('account_number_visible', false);
                                         $set('reference_number_visible', false);
+                                        $set('documentation', false);
                                     }
                                 }),
+                            Forms\Components\Placeholder::make('documentation')
+                                ->label('Scan QR To Pay')
+                                ->visible(fn ($get) => $get('account_number_visible'))
+                                ->content(new HtmlString('<img src="/assets/img/gcash_qr.jpg"/>')),
                             Forms\Components\TextInput::make('amount')
                                 // ->live()
                                 ->disabled()
@@ -110,6 +136,20 @@ class AppointmentResource extends Resource
                                 ->required(fn ($get) => $get('reference_number_visible')),
                             Forms\Components\Textarea::make('notes')
                                 ->columnSpanFull(),
+                            Forms\Components\Hidden::make('status'),
+                            $user->role == 'ADMIN' ?
+                                Forms\Components\Select::make('status')
+                                ->options([
+                                    'PENDING' => 'PENDING',
+                                    'CONFIRMED' => 'CONFIRMED',
+                                    'CANCELLED' => 'CANCELLED',
+                                    'REJECTED' => 'REJECTED',
+                                ])
+                                ->getOptionLabelFromRecordUsing(fn (Patient $record) => "{$record->first_name} {$record->last_name}")
+                                ->required()
+                                :
+                                Forms\Components\Hidden::make('status')
+                                ->default('PENDING'),
                         ]),
                 ]),
 
@@ -158,7 +198,15 @@ class AppointmentResource extends Resource
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('time'),
+                Tables\Columns\TextColumn::make('time.name'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'PENDING' => 'gray',
+                        'CANCELLED' => 'warning',
+                        'CONFIRMED' => 'success',
+                        'REJECTED' => 'danger',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

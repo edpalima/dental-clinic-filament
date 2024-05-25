@@ -2,7 +2,7 @@
 <div id="topbar" class="d-flex align-items-center fixed-top">
     <div class="container d-flex align-items-center justify-content-center justify-content-md-between">
         <div class="align-items-center d-none d-md-flex">
-            <i class="bi bi-clock"></i> Monday - Sunday, 8AM to 10PM
+            <i class="bi bi-clock"></i> Monday - Sunday, 8AM to 5PM
         </div>
         <div class="d-flex align-items-center">
             <i class="bi bi-phone"></i> Call us now +63998993833

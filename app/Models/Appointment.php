@@ -15,7 +15,7 @@ class Appointment extends Model
         'doctor_id',
         'procedure_id',
         'date',
-        'time',
+        'time_id',
         'notes',
         'payment_options',
         'amount',
@@ -38,6 +38,11 @@ class Appointment extends Model
     public function procedure()
     {
         return $this->belongsTo(Procedure::class);
+    }
+
+    public function time()
+    {
+        return $this->belongsTo(Time::class);
     }
 
     public static function getBookedTimes($doctorId, $date)
