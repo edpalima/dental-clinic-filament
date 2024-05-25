@@ -86,7 +86,7 @@ class AppointmentResource extends Resource
                                 ->required()
                                 :
                                 Forms\Components\Hidden::make('patient_id')
-                                ->default(4),
+                                ->default($user->patient->id),
 
                             Forms\Components\Select::make('doctor_id')
                                 ->relationship(name: 'doctor', titleAttribute: 'first_name')
