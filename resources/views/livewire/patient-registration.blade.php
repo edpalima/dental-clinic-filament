@@ -1,5 +1,8 @@
 <div>
     <div class="container mt-2">
+        <div class="text-center mb-1">
+            <p>Sign up to schedule your appointment or <a class="text-success" href="/admin">log in</a> to manage your existing bookings</p>
+        </div>
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-center align-items-center">
