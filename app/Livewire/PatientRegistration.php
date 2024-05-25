@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Patient;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
+use Filament\Notifications\Notification;
 
 class PatientRegistration extends Component
 {
@@ -182,12 +184,13 @@ class PatientRegistration extends Component
         ]);
 
         try {
-            $success = $patient->save();
-
-            if (!$success) {
-                // Optionally handle the situation where save returns false
-                // throw new Exception('Failed to save the patient.');
-                dd("Failed to save");
+            if ($patient->save()) {
+                User::create([
+                    'name' => $this->first_name . ' ' . $this->last_name,
+                    'email' => $this->email,
+                    'password' => Hash::make($this->password),
+                    'role' => User::ROLE_PATIENT,
+                ]);
             }
         } catch (Exception $e) {
             // Handle the exception if save throws an error
@@ -195,19 +198,14 @@ class PatientRegistration extends Component
             dd($e->getMessage());
         }
 
-
         $patient->save();
 
-        // Flash success message
-        session()->flash('message', 'Registration successful!');
+        Notification::make()
+            ->title('Registered successfully')
+            ->success()
+            ->send();
 
-        // Redirect back to the registration page
-        return redirect()->route('register');
-    }
-
-    public function create(): void
-    {
-        dd($this->form->getState());
+        return redirect('/admin');
     }
 
     public function render()

@@ -25,5 +25,25 @@ class UsersTableSeeder extends Seeder
                 'updated_at' => now()
             ],
         ]);
+
+        DB::table('procedures')->insert([
+            'name' => 'Teeth Cleaning',
+            'description' => 'Professional teeth cleaning to remove plaque and tartar.',
+            'cost' => 50.00,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('doctors')->insert([
+            'first_name' => 'Almoro',
+            'middle_name' => 'A',
+            'last_name' => 'Santiago',
+            'specialization' => 'Dentistry',
+            'contact_no' => '0987654321',
+            'email' => 'almorosantiago@example.com',
+            'password' => Hash::make('password'), // Or use bcrypt('password')
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

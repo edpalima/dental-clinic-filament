@@ -16,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentResource extends Resource
 {
@@ -39,6 +40,8 @@ class AppointmentResource extends Resource
             $bookedTimes[$appointment->appointment_date][] = $appointment->appointment_time;
         }
 
+        $user = Auth::user();
+
         return $form
             ->schema([
 
@@ -58,7 +61,13 @@ class AppointmentResource extends Resource
                             Forms\Components\Select::make('patient_id')
                                 ->relationship(name: 'patient', titleAttribute: 'first_name')
                                 ->getOptionLabelFromRecordUsing(fn (Patient $record) => "{$record->first_name} {$record->last_name}")
-                                ->required(),
+                                ->required()
+                                ->visible(fn () => $user->role === 'ADMIN'),
+
+                            Forms\Components\Hidden::make('patient_id')
+                                ->default($user->role === 'PATIENT' ? $user->patient->id : null)
+                                ->visible(fn () => $user->role === 'PATIENT'),
+
                             Forms\Components\Select::make('doctor_id')
                                 ->relationship(name: 'doctor', titleAttribute: 'first_name')
                                 ->getOptionLabelFromRecordUsing(fn (Doctor $record) => "{$record->first_name} {$record->last_name}")
@@ -88,6 +97,26 @@ class AppointmentResource extends Resource
 
 
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = static::getModel()::query();
+
+        $user = Auth::user();
+
+        if ($user->role === 'PATIENT') {
+            $patient = $user->patient;
+
+            if ($patient) {
+                $query->where('patient_id', $patient->id);
+            } else {
+                // Handle case where the user is a PATIENT but has no associated patient record
+                $query->whereNull('patient_id');
+            }
+        }
+
+        return $query;
     }
 
     public static function table(Table $table): Table

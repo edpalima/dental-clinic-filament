@@ -577,7 +577,7 @@
                                 @enderror
                             </div>
                             <div class="form-group mb-3">
-                                <label for="check_illness">13. Do you have or have you had any of the following? Check
+                                <label class="mb-2" for="check_illness">13. Do you have or have you had any of the following? Check
                                     which apply</label>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -677,6 +677,9 @@
                                                 value="heart_attack">
                                             <label class="form-check-label" for="heart_attack">Heart Attack</label>
                                         </div>
+                                    </div>
+                                    <div class="col-md-4">
+
                                         <div class="form-check">
                                             <input
                                                 class="form-check-input @error('check_illness') is-invalid @enderror"
@@ -685,9 +688,6 @@
                                             <label class="form-check-label" for="thyroid_problem">Thyroid
                                                 Problem</label>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-
                                         <div class="form-check">
                                             <input
                                                 class="form-check-input @error('check_illness') is-invalid @enderror"
@@ -773,6 +773,9 @@
                                                 value="diabetes">
                                             <label class="form-check-label" for="diabetes">Diabetes</label>
                                         </div>
+
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-check">
                                             <input
                                                 class="form-check-input @error('check_illness') is-invalid @enderror"
@@ -794,8 +797,6 @@
                                                 value="cancer_tumors">
                                             <label class="form-check-label" for="cancer_tumors">Cancer/Tumors</label>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
                                         <div class="form-check">
                                             <input
                                                 class="form-check-input @error('check_illness') is-invalid @enderror"
