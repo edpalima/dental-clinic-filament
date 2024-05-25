@@ -113,9 +113,24 @@ class PatientResource extends Resource
                     Forms\Components\DatePicker::make('last_dental_visit'),
                 ])->columns(),
 
-
-
                 Forms\Components\Section::make('Medical History')->schema([
+                    Forms\Components\TextInput::make('physician_name')
+                        ->label('Name of Physician')
+                        ->maxLength(255)
+                        ->default(null),
+                    Forms\Components\TextInput::make('physician_specialty')
+                        ->label('Specialty, if applicable')
+                        ->maxLength(255)
+                        ->default(null),
+                    Forms\Components\TextInput::make('physician_office')
+                        ->label('Office Address')
+                        ->maxLength(255)
+                        ->default(null),
+                    Forms\Components\TextInput::make('physician_number')
+                        ->label('Office Number')
+                        ->maxLength(255)
+                        ->default(null),
+
                     Forms\Components\Toggle::make('is_good_health')
                         ->label('1. Are you in good health?')
                         ->required(),
@@ -153,9 +168,15 @@ class PatientResource extends Resource
                     Forms\Components\Toggle::make('is_has_vice')
                         ->label('7. Do you use alcohol, cocaine, or other dangerous drugs?')
                         ->required(),
-                    Forms\Components\TextInput::make('allergic_id')
+                    Forms\Components\CheckboxList::make('check_allergies')
                         ->label('8. Are you allergic to any of the following?')
-                        ->numeric()
+                        ->options([
+                            'local_anesthetic' => 'Local Anesthetic',
+                            'sulfa_drugs' => 'Sulfa drugs',
+                            'aspirin' => 'Aspirin',
+                            'latext' => 'Latext',
+                            'others' => 'Others',
+                        ])
                         ->default(null),
                     Forms\Components\TextInput::make('bleeding_time')
                         ->label('9. Bleeding Time')

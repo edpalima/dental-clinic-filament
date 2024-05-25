@@ -13,20 +13,21 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
+            $table->string('first_name')->nullable();
             $table->string('middle_name')->nullable();
-            $table->string('last_name');
+            $table->string('last_name')->nullable();
             $table->string('nickname')->nullable();
             $table->string('religion')->nullable();
             $table->string('nationality')->nullable();
-            $table->enum('gender', ['male', 'female']);
-            $table->string('occupation')->nullable();
-            $table->string('dental_insurance')->default(false);
-            $table->date('insurance_effective_date')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
             $table->string('address')->nullable();
             $table->string('contact_no')->nullable();
+            $table->string('occupation')->nullable();
+            $table->string('dental_insurance')->nullable();
+            $table->date('insurance_effective_date')->nullable();
             $table->string('email')->unique();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->string('guardian_name')->nullable();
             $table->string('guardian_occupation')->nullable();
             $table->string('referrer')->nullable();
@@ -34,9 +35,14 @@ return new class extends Migration
             $table->string('previous_dentist')->nullable();
             $table->date('last_dental_visit')->nullable();
 
+            // Physician
+            $table->string('physician_name')->nullable();
+            $table->string('physician_specialty')->nullable();
+            $table->string('physician_office')->nullable();
+            $table->string('physician_number')->nullable();
 
-
-            $table->boolean('is_good_health')->default(true);
+            // Medical History
+            $table->boolean('is_good_health')->default(false);
             $table->boolean('is_medical_treatment')->default(false);
             $table->string('is_medical_treatment_name')->nullable();
             $table->boolean('is_illness_operated')->default(false);
@@ -47,14 +53,14 @@ return new class extends Migration
             $table->string('is_has_medication_name')->nullable();
             $table->boolean('is_using_tobacco')->default(false);
             $table->boolean('is_has_vice')->default(false);
-            $table->unsignedBigInteger('allergic_id')->nullable();
+            $table->text('check_allergies')->nullable();
             $table->string('bleeding_time')->nullable();
             $table->boolean('is_pregnant')->default(false);
             $table->boolean('is_nursing')->default(false);
             $table->boolean('is_taking_pills')->default(false);
             $table->string('blood_type')->nullable();
             $table->string('blood_pressure')->nullable();
-            $table->string('check_illness')->nullable();
+            $table->text('check_illness')->nullable();
             $table->boolean('check_consent')->default(false);
             $table->timestamps();
         });

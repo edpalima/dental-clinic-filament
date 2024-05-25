@@ -23,7 +23,7 @@ class UserRegistrationForm extends Component
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
-            'role' => Hash::make($this->password),
+            'role' => $this->password,
         ]);
 
         // auth()->login($user);

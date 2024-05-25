@@ -30,18 +30,22 @@ class Patient extends Model
         'reason',
         'previous_dentist',
         'last_dental_visit',
+        'physician_name',
+        'physician_specialty',
+        'physician_office',
+        'physician_number',
         'is_good_health',
         'is_medical_treatment',
-        'medical_condition',
+        'is_medical_treatmenint_name',
         'is_illness_operated',
-        'illness_operated_details',
+        'is_illness_operated_name',
         'is_hospitalized',
-        'hospitalized_details',
+        'is_hospitalized_name',
         'is_has_medication',
-        'medication_details',
+        'is_has_medication_name',
         'is_using_tobacco',
         'is_has_vice',
-        'allergies',
+        'check_allergies',
         'bleeding_time',
         'is_pregnant',
         'is_nursing',
@@ -49,12 +53,14 @@ class Patient extends Model
         'blood_type',
         'blood_pressure',
         'medical_conditions',
+        'check_illness',
         'check_consent',
     ];
 
     protected $hidden = ['password'];
 
     protected $casts = [
+        'check_allergies' => 'array',
         'check_illness' => 'array',
     ];
 

@@ -4,7 +4,7 @@
     <!-- ======= Breadcrumbs Section ======= -->
     <section class="breadcrumbs">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center pt-4">
                 <h2>Patient Registration</h2>
                 <ol>
                     <li><a href="/">Home</a></li>
