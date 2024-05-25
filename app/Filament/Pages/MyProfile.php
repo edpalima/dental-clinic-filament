@@ -276,7 +276,7 @@ class MyProfile extends Page implements HasForms
     {
         return [
             Action::make('save')
-                ->label('The Label')
+                ->label('Submit')
                 ->submit('save'),
         ];
     }
