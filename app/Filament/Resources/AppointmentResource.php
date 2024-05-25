@@ -7,6 +7,7 @@ use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
+use App\Models\Procedure;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Wizard;
@@ -58,22 +59,23 @@ class AppointmentResource extends Resource
                         ]),
                     Wizard\Step::make('Assign People')
                         ->schema([
-                            Forms\Components\Select::make('patient_id')
-                                ->relationship(name: 'patient', titleAttribute: 'first_name')
+                            $user->role == 'ADMIN' ?
+                                Forms\Components\Select::make('patient_id')
+                                ->relationship('patient', 'first_name')
                                 ->getOptionLabelFromRecordUsing(fn (Patient $record) => "{$record->first_name} {$record->last_name}")
                                 ->required()
-                                ->visible(fn () => $user->role === 'ADMIN'),
-
-                            Forms\Components\Hidden::make('patient_id')
-                                ->default($user->role === 'PATIENT' ? $user->patient->id : null)
-                                ->visible(fn () => $user->role === 'PATIENT'),
+                                :
+                                Forms\Components\Hidden::make('patient_id')
+                                ->default(4),
 
                             Forms\Components\Select::make('doctor_id')
                                 ->relationship(name: 'doctor', titleAttribute: 'first_name')
                                 ->getOptionLabelFromRecordUsing(fn (Doctor $record) => "{$record->first_name} {$record->last_name}")
                                 ->required(),
                             Forms\Components\Select::make('procedure_id')
-                                ->relationship(name: 'procedure', titleAttribute: 'name'),
+                                ->relationship(name: 'procedure', titleAttribute: 'name')
+                                ->live()
+                                ->afterStateUpdated(fn ($state, callable $set) => $set('amount', Procedure::find($state)?->cost)),
                         ]),
                     Wizard\Step::make('Payments')
                         ->schema([
@@ -83,13 +85,29 @@ class AppointmentResource extends Resource
                                     'gcash' => 'GCash',
                                 ])
                                 ->label('Payment Options')
-                                ->required(),
+                                ->required()
+                                ->live()
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    if ($state === 'gcash') {
+                                        $set('account_number_visible', true);
+                                        $set('reference_number_visible', true);
+                                    } else {
+                                        $set('account_number_visible', false);
+                                        $set('reference_number_visible', false);
+                                    }
+                                }),
                             Forms\Components\TextInput::make('amount')
+                                // ->live()
+                                ->disabled()
                                 ->prefix('₱'),
                             Forms\Components\TextInput::make('account_number')
-                                ->numeric(),
+                                ->numeric()
+                                ->visible(fn ($get) => $get('account_number_visible'))
+                                ->required(fn ($get) => $get('account_number_visible')),
                             Forms\Components\TextInput::make('reference_number')
-                                ->numeric(),
+                                ->numeric()
+                                ->visible(fn ($get) => $get('reference_number_visible'))
+                                ->required(fn ($get) => $get('reference_number_visible')),
                             Forms\Components\Textarea::make('notes')
                                 ->columnSpanFull(),
                         ]),

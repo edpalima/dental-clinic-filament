@@ -17,34 +17,19 @@ class MiddlewareFilamentAdmin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
     {
-        $auth = Filament::auth();
-
-        if (!$auth->check()) {
-            return redirect(route('login'));
+        if (Auth::check() && Auth::user()->role === 'ADMIN') {
+            return $next($request);
         }
 
-        Auth::shouldUse(Filament::getAuthGuard());
-
-        /** @var Model $user */
-        $user = $auth->user();
-
-
-        $panel = Filament::getCurrentPanel();
-
-        if ($user instanceof FilamentUser) {
-
-            if ($user->role !== 'ADMIN') {
-                return redirect('admin/appointments');
-            }
-
-
-            // if (!$user->canAccessPanel($panel) && config('app.env') !== 'local') {
-            //     return redirect(route('user.home'));
-            // }
-        }
-
-        return $next($request);
+        return redirect('/appointments'); // Redirect to home or any other page if not an admin
     }
 }

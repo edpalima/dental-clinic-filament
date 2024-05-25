@@ -254,7 +254,10 @@ class PatientResource extends Resource
 
                 Forms\Components\Checkbox::make('check_consent')
                     ->label(fn () => new HtmlString('I accept the <a href="/consent-agreement" target="_blank" style="color: red">Consents Agreement</a>'))
-                    ->accepted(),
+                    ->accepted()
+                    ->validationMessages([
+                        'accepted' => 'You must accept the Consents Agreement.',
+                    ]),
             ]);
     }
 
