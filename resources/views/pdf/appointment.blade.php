@@ -213,7 +213,7 @@
                 {{ $appointment->patient->fullname }}
             </td>
             <td>
-                {{ $appointment->doctor->fullname }}
+                {{ $appointment->doctor->specialization }}
             </td>
         </tr>
         <tr>
