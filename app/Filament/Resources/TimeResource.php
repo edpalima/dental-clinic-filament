@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class TimeResource extends Resource
 {
@@ -96,5 +97,11 @@ class TimeResource extends Resource
             'view' => Pages\ViewTime::route('/{record}'),
             'edit' => Pages\EditTime::route('/{record}/edit'),
         ];
+    }
+
+
+    public static function canAccess(): bool
+    {
+        return Auth::user()->isAdmin();
     }
 }
