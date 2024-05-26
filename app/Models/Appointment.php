@@ -17,6 +17,7 @@ class Appointment extends Model
         'date',
         'time_id',
         'notes',
+        'cancelled_reason',
         'payment_options',
         'amount',
         'account_number',

@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Appointment;
 use App\Models\Patient;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -30,12 +31,11 @@ class StatsOverview extends BaseWidget
                 // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
                 ,
 
-            Stat::make('Total Users', Patient::count())
+            Stat::make('Total Users', User::count())
                 ->description('Total created users')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 // ->color('danger')
                 // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
-
         ];
     }
 }

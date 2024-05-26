@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('time_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->text('notes')->nullable();
+            $table->text('cancelled_reason')->nullable();
             $table->string('payment_options')->nullable();
             $table->string('amount')->nullable();
             $table->string('account_number')->nullable();
