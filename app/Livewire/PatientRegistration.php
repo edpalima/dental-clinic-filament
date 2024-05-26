@@ -205,7 +205,7 @@ class PatientRegistration extends Component
             ->success()
             ->send();
 
-        return redirect('/admin');
+        return redirect('/admin/login');
     }
 
     public function render()

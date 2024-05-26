@@ -24,7 +24,7 @@
                 <li><a class="nav-link scrollto" href="/#about">About</a></li>
                 <li><a class="nav-link scrollto" href="/#services">Services</a></li>
                 <li><a class="nav-link scrollto" href="/#contact">Location</a></li>
-                <li><a class="nav-link scrollto" href="/admin">Login</a></li>
+                <li><a class="nav-link scrollto" href="/admin/login">Login</a></li>
             </ul>
             <i class="bi bi-list mobile-nav-toggle"></i>
         </nav><!-- .navbar -->
