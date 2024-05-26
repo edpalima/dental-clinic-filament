@@ -19,20 +19,22 @@ class StatsOverview extends BaseWidget
             Stat::make('Total Appointments', Appointment::count())
                 ->description('Total created appointments')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('success')
-                ->chart([7, 3, 4, 5, 6, 3, 5, 3]),
+                // ->color('success')
+                // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
+                ,
 
             Stat::make('Total Patients', Patient::count())
                 ->description('Total registered Patients')
-                ->descriptionIcon('heroicon-m-arrow-trending-down')
-                ->color('danger')
-                ->chart([7, 3, 4, 5, 6, 3, 5, 3]),
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+                // ->color('danger')
+                // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
+                ,
 
             Stat::make('Total Users', Patient::count())
-                ->description('Total registered Patients')
-                ->descriptionIcon('heroicon-m-arrow-trending-down')
-                ->color('danger')
-                ->chart([7, 3, 4, 5, 6, 3, 5, 3])
+                ->description('Total created users')
+                ->descriptionIcon('heroicon-m-arrow-trending-up')
+                // ->color('danger')
+                // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
 
         ];
     }

@@ -1,17 +1,22 @@
 <x-filament::page>
-    <h2>Appointment Reports</h2>
+  <div style="margin-bottom: 20px;">
+    <a href="{{ route('appointment-reports.pdf') }}" 
+       style="display: inline-block; padding: 10px 20px; background-color: #061c34; color: white; text-align: center; text-decoration: none; border-radius: 5px;">
+        Download Report
+    </a>
+</div>
     <table>
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Number of Appointments</th>
+                <th style="text-align: center;">Number of Appointments</th>
             </tr>
         </thead>
         <tbody>
             @foreach($appointments as $appointment)
                 <tr>
-                    <td>{{ $appointment->date }}</td>
-                    <td>{{ $appointment->count }}</td>
+                    <td style="text-align: center;">{{ $appointment->date }}</td>
+                    <td style="text-align: center;">{{ $appointment->count }}</td>
                 </tr>
             @endforeach
         </tbody>

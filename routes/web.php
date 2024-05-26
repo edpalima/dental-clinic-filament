@@ -26,8 +26,11 @@ Route::get('/consent-agreement', function () {
     return view('privacy-policy.index');
 });
 
-
 Route::get(
     '/appointments/{appointment}/download-pdf',
     [PDFController::class, 'downloadPDF']
 )->name('appointments.download-pdf');
+
+use App\Http\Controllers\ReportController;
+
+Route::get('/appointment-reports/pdf', [ReportController::class, 'generateAppointmentReportPdf'])->name('appointment-reports.pdf');
