@@ -136,6 +136,9 @@ class AppointmentResource extends Resource
                                 ->required(fn ($get) => $get('reference_number_visible')),
                             Forms\Components\Textarea::make('notes')
                                 ->columnSpanFull(),
+                            Forms\Components\Textarea::make('valid_reason')
+                                ->label('Valid Reason')
+                                ->columnSpanFull(),
                             Forms\Components\Hidden::make('status'),
                             $user->role == 'ADMIN' ?
                                 Forms\Components\Select::make('status')
