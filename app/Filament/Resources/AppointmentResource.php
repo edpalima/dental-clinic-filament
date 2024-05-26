@@ -72,11 +72,11 @@ class AppointmentResource extends Resource
                             Forms\Components\Radio::make('time_id')
                                 ->label('Appointment Time')
                                 ->options(function (callable $get) {
-                                    $selectedDate = $get('date');
-                                    if ($selectedDate) {
-                                        $takenTimeIds = Appointment::whereDate('date', $selectedDate)->pluck('time_id')->toArray();
-                                        return Time::whereNotIn('id', $takenTimeIds)->pluck('name', 'id');
-                                    }
+                                    // $selectedDate = $get('date');
+                                    // if ($selectedDate) {
+                                    //     $takenTimeIds = Appointment::whereDate('date', $selectedDate)->pluck('time_id')->toArray();
+                                    //     return Time::whereNotIn('id', $takenTimeIds)->pluck('name', 'id');
+                                    // }
                                     return Time::pluck('name', 'id');
                                 })
                                 ->hidden(fn (callable $get) => !$get('date'))
