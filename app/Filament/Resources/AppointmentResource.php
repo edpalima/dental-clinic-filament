@@ -15,13 +15,15 @@ use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction as TablesExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Blade;
 
 class AppointmentResource extends Resource
 {
@@ -186,6 +188,9 @@ class AppointmentResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('patient.fullname')
                     ->searchable()
                     ->sortable(),
@@ -227,10 +232,26 @@ class AppointmentResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                // Tables\Actions\Action::make('pdf')
+                //     ->label('PDF')
+                //     ->color('success')
+                //     ->icon('heroicon-s-arrow-down-tray')
+                //     ->action(function (Model $record) {
+                //         return response()->streamDownload(function () use ($record) {
+                //             echo Pdf::loadHtml(
+                //                 Blade::render('pdf', ['record' => $record])
+                //             )->stream();
+                //         }, $record->number . '.pdf');
+                //     }),
+                Tables\Actions\Action::make('download')
+                    ->label('Invoice')
+                    ->url(fn (Appointment $record) => route('appointments.download-pdf', $record))
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-arrow-down-tray'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    TablesExportBulkAction::make(),
+                    ExportBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

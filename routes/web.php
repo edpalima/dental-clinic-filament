@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,3 +25,9 @@ Route::get('/patient-registration', function () {
 Route::get('/consent-agreement', function () {
     return view('privacy-policy.index');
 });
+
+
+Route::get(
+    '/appointments/{appointment}/download-pdf',
+    [PDFController::class, 'downloadPDF']
+)->name('appointments.download-pdf');
