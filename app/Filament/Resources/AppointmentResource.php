@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AppointmentResource\Pages;
+use App\Filament\Resources\AppointmentResource\Pages\EditAppointment;
 use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Models\Appointment;
 use App\Models\Doctor;
@@ -140,10 +141,6 @@ class AppointmentResource extends Resource
                                 ->required(fn ($get) => $get('reference_number_visible')),
                             Forms\Components\Textarea::make('notes')
                                 ->columnSpanFull(),
-                            Forms\Components\Textarea::make('valid_reason')
-                                ->label('Valid Reason')
-                                ->columnSpanFull(),
-                            Forms\Components\Hidden::make('status'),
                             $user->role == 'ADMIN' ?
                                 Forms\Components\Select::make('status')
                                 ->options([
@@ -152,11 +149,39 @@ class AppointmentResource extends Resource
                                     'CANCELLED' => 'CANCELLED',
                                     'REJECTED' => 'REJECTED',
                                 ])
-                                ->getOptionLabelFromRecordUsing(fn (Patient $record) => "{$record->first_name} {$record->last_name}")
                                 ->required()
+                                ->live()
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    if ($state === 'CANCELLED') {
+                                        $set('cancelled_reason_visible', true);
+                                    } else {
+                                        $set('cancelled_reason_visible', false);
+                                    }
+                                })
                                 :
-                                Forms\Components\Hidden::make('status')
+                                Forms\Components\Select::make('status')
+                                ->options([
+                                    'PENDING' => 'PENDING',
+                                    'CANCELLED' => 'CANCELLED',
+                                ])
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    if ($state === 'CANCELLED') {
+                                        $set('cancelled_reason_visible', true);
+                                    } else {
+                                        $set('cancelled_reason_visible', false);
+                                    }
+                                })
+                                ->live()
+                                ->required()
+                                ->hiddenOn('create'),
+                            Forms\Components\Hidden::make('status')
                                 ->default('PENDING'),
+
+                            Forms\Components\Textarea::make('cancelled_reason')
+                                ->label('Cancelled Reason')
+                                ->visible(fn ($get) => $get('cancelled_reason_visible'))
+                                ->required(fn ($get) => $get('cancelled_reason_visible'))
+                                ->columnSpanFull(),
                         ]),
                 ]),
 
