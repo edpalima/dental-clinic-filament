@@ -6,6 +6,7 @@ use App\Filament\Resources\AppointmentResource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Facades\Auth;
 
 class LatestAppointments extends BaseWidget
 {
@@ -55,5 +56,14 @@ class LatestAppointments extends BaseWidget
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ]);
+    }
+
+    public static function canView(): bool
+    {
+        if (Auth::user()->isAdmin()) {
+            return true;
+        }
+
+        return false;
     }
 }

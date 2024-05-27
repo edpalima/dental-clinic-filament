@@ -7,6 +7,7 @@ use App\Models\Patient;
 use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Auth;
 
 class StatsOverview extends BaseWidget
 {
@@ -20,22 +21,31 @@ class StatsOverview extends BaseWidget
             Stat::make('Total Appointments', Appointment::count())
                 ->description('Total created appointments')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                // ->color('success')
-                // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
-                ,
+            // ->color('success')
+            // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
+            ,
 
             Stat::make('Total Patients', Patient::count())
                 ->description('Total registered Patients')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                // ->color('danger')
-                // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
-                ,
+            // ->color('danger')
+            // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
+            ,
 
             Stat::make('Total Users', User::count())
                 ->description('Total created users')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                // ->color('danger')
-                // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
+            // ->color('danger')
+            // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
         ];
+    }
+
+    public static function canView(): bool
+    {
+        if (Auth::user()->isAdmin()) {
+            return true;
+        }
+
+        return false;
     }
 }

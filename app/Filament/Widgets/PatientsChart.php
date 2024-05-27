@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\Appointment;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PatientsChart extends ChartWidget
@@ -22,7 +23,7 @@ class PatientsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Orders',
+                    'label' => 'Appointments',
                     'data' => array_values($data)
                 ]
             ],
@@ -33,5 +34,14 @@ class PatientsChart extends ChartWidget
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    public static function canView(): bool
+    {
+        if (Auth::user()->isAdmin()) {
+            return true;
+        }
+
+        return false;
     }
 }

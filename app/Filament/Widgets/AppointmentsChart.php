@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentsChart extends ChartWidget
 {
@@ -50,5 +51,14 @@ class AppointmentsChart extends ChartWidget
             'appointmentsPerMonth' => $appointmentsPerMonth,
             'months' => $months
         ];
+    }
+
+    public static function canView(): bool
+    {
+        if (Auth::user()->isAdmin()) {
+            return true;
+        }
+
+        return false;
     }
 }
