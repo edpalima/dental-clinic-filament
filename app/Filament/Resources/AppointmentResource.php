@@ -159,7 +159,10 @@ class AppointmentResource extends Resource
                                     }
                                 })
                                 :
-                                Forms\Components\Select::make('status')
+                                Forms\Components\Hidden::make('status')
+                                ->default('PENDING')
+                                ->visibleOn('create'),
+                            Forms\Components\Select::make('status')
                                 ->options([
                                     'PENDING' => 'PENDING',
                                     'CANCELLED' => 'CANCELLED',
@@ -173,9 +176,8 @@ class AppointmentResource extends Resource
                                 })
                                 ->live()
                                 ->required()
-                                ->hiddenOn('create'),
-                            Forms\Components\Hidden::make('status')
-                                ->default('PENDING'),
+                                ->hiddenOn('create'), // Hide on create
+
 
                             Forms\Components\Textarea::make('cancelled_reason')
                                 ->label('Cancelled Reason')
