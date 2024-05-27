@@ -39,7 +39,7 @@ class AppointmentsChart extends ChartWidget
         $appointmentsPerMonth = [];
 
         $months = collect(range(1, 12))->map(function ($month) use ($now, &$appointmentsPerMonth) {
-            $count = Appointment::whereMonth('created_at', Carbon::parse($now->month($month)
+            $count = Appointment::whereMonth('date', Carbon::parse($now->month($month)
                 ->format('Y-m')))->count();
 
             $appointmentsPerMonth[] = $count;
