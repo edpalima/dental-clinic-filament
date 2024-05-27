@@ -111,38 +111,29 @@ class AppointmentResource extends Resource
                                 ])
                                 ->label('Payment Options')
                                 ->required()
-                                ->live()
-                                ->afterStateUpdated(function (callable $set, $state) {
-                                    if ($state === 'gcash') {
-                                        $set('account_number_visible', true);
-                                        $set('reference_number_visible', true);
-                                        $set('documentation', true);
-                                    } else {
-                                        $set('account_number_visible', false);
-                                        $set('reference_number_visible', false);
-                                        $set('documentation', false);
-                                    }
-                                }),
+                                ->live(),
                             Forms\Components\Placeholder::make('documentation')
                                 ->label('Scan QR To Pay')
-                                ->visible(fn ($get) => $get('account_number_visible'))
+                                ->visible(fn ($get) => $get('payment_options') === 'gcash')
                                 ->content(new HtmlString('<img src="/assets/img/gcash_qr.jpg"/>')),
                             Forms\Components\TextInput::make('amount')
-                                // ->live()
-                                ->disabled()
-                                ->prefix('₱'),
+                                ->default(fn ($record) => $record ? Procedure::find($record->procedure_id)?->cost : 0)
+                                ->live()
+                                ->disabledOn('edit')
+                                ->prefix('₱')
+                                ->dehydrateStateUsing(fn ($state, $get) => $state ? Procedure::find($get('procedure_id'))?->cost : 0),
                             Forms\Components\TextInput::make('account_number')
                                 ->numeric()
-                                ->visible(fn ($get) => $get('account_number_visible'))
-                                ->required(fn ($get) => $get('account_number_visible')),
+                                ->visible(fn ($get) => $get('payment_options') === 'gcash')
+                                ->required(fn ($get) => $get('payment_options') === 'gcash'),
                             Forms\Components\TextInput::make('reference_number')
                                 ->numeric()
-                                ->visible(fn ($get) => $get('reference_number_visible'))
-                                ->required(fn ($get) => $get('reference_number_visible')),
+                                ->visible(fn ($get) => $get('payment_options') === 'gcash')
+                                ->required(fn ($get) => $get('payment_options') === 'gcash'),
                             Forms\Components\Textarea::make('notes')
                                 ->columnSpanFull(),
-                            $user->role == 'ADMIN' ?
-                                Forms\Components\Select::make('status')
+                            $user->role == 'ADMIN'
+                                ? Forms\Components\Select::make('status')
                                 ->options([
                                     'PENDING' => 'PENDING',
                                     'CONFIRMED' => 'CONFIRMED',
@@ -151,44 +142,37 @@ class AppointmentResource extends Resource
                                 ])
                                 ->required()
                                 ->live()
-                                ->afterStateUpdated(function (callable $set, $state) {
-                                    if ($state === 'CANCELLED') {
-                                        $set('cancelled_reason_visible', true);
-                                    } else {
-                                        $set('cancelled_reason_visible', false);
-                                    }
-                                })
-                                :
-                                Forms\Components\Hidden::make('status')
-                                ->default('PENDING')
-                                ->visibleOn('create'),
-                            Forms\Components\Select::make('status')
+                                :  Forms\Components\Select::make('status')
                                 ->options([
-                                    'PENDING' => 'PENDING',
-                                    'CANCELLED' => 'CANCELLED',
+                                    'PENDING' => 'Pending',
+                                    'CANCELLED' => 'Cancelled',
                                 ])
-                                ->afterStateUpdated(function (callable $set, $state) {
-                                    if ($state === 'CANCELLED') {
-                                        $set('cancelled_reason_visible', true);
-                                    } else {
-                                        $set('cancelled_reason_visible', false);
-                                    }
-                                })
-                                ->live()
+                                ->default('PENDING')
                                 ->required()
-                                ->hiddenOn('create'), // Hide on create
+                                ->live()
+                                ->hiddenOn('create'), // Visible only on create
 
-
+                            // Cancelled reason field
+                            Forms\Components\Hidden::make('cancelled_reason_visible')
+                                ->default(fn ($get) => $get('status') === 'CANCELLED'),
                             Forms\Components\Textarea::make('cancelled_reason')
                                 ->label('Cancelled Reason')
-                                ->visible(fn ($get) => $get('cancelled_reason_visible'))
-                                ->required(fn ($get) => $get('cancelled_reason_visible'))
+                                ->visible(fn ($get) => $get('status') === 'CANCELLED')
+                                ->required(fn ($record, $get) => $get('status') === 'CANCELLED')
                                 ->columnSpanFull(),
                         ]),
                 ]),
 
 
             ]);
+    }
+
+    public static function editForm(Form $form): Form
+    {
+        return static::form($form)->mutateFormDataUsing(function (array $data): array {
+            $data['cancelled_reason_visible'] = $data['status'] === 'CANCELLED';
+            return $data;
+        });
     }
 
     public static function getEloquentQuery(): Builder

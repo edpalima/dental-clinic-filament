@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('amount')->nullable();
             $table->string('account_number')->nullable();
             $table->string('reference_number')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->nullable()->default('PENDING');
             $table->string('approved_by')->nullable();
             $table->timestamps();
         });
