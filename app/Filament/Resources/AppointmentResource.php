@@ -66,21 +66,51 @@ class AppointmentResource extends Resource
 
                             Forms\Components\DatePicker::make('date')
                                 ->required()
+                                // ->disabledDates(['2000-01-03', '2000-01-15', '2000-01-20'])
                                 ->live()
                                 ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
                                 ->afterStateUpdated(fn ($state, callable $get, callable $set) => $set('time_id', null)),
                             Forms\Components\Radio::make('time_id')
                                 ->label('Appointment Time')
                                 ->options(function (callable $get) {
-                                    // $selectedDate = $get('date');
-                                    // if ($selectedDate) {
-                                    //     $takenTimeIds = Appointment::whereDate('date', $selectedDate)->pluck('time_id')->toArray();
-                                    //     return Time::whereNotIn('id', $takenTimeIds)->pluck('name', 'id');
-                                    // }
-                                    return Time::pluck('name', 'id');
+                                    $selectedDate = $get('date');
+                                    if (!$selectedDate) {
+                                        return [];
+                                    }
+
+                                    // Get all booked time slots for the selected date
+                                    $bookedTimeIds = Appointment::whereDate('date', $selectedDate)
+                                        ->pluck('time_id')
+                                        ->toArray();
+
+                                    // Get all available time slots
+                                    $allTimeSlots = Time::pluck('name', 'id')->toArray();
+
+                                    return $allTimeSlots;
+                                })
+                                ->disableOptionWhen(function ($value, callable $get) {
+                                    $selectedDate = $get('date');
+                                    $currentAppointmentId = $get('id'); // Assuming 'id' is the appointment ID
+                    
+                                    if (!$selectedDate) {
+                                        return false;
+                                    }
+                    
+                                    // Get all booked time slots for the selected date, excluding the current appointment's time
+                                    $bookedTimeIds = Appointment::whereDate('date', $selectedDate)
+                                        ->when($currentAppointmentId, function ($query, $id) {
+                                            return $query->where('id', '!=', $id);
+                                        })
+                                        ->pluck('time_id')
+                                        ->toArray();
+                    
+                                    // Disable the option if it is in the booked time slots
+                                    return in_array($value, $bookedTimeIds);
                                 })
                                 ->hidden(fn (callable $get) => !$get('date'))
-                                ->required(fn (callable $get) => $get('date') !== null),
+                                ->required(fn (callable $get) => $get('date') !== null)
+                                ->extraInputAttributes(['class' => 'select-time-disable']),
+
                         ]),
                     Wizard\Step::make('Assign')
                         ->schema([

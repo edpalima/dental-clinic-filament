@@ -265,6 +265,9 @@ class PatientResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('first_name')
                     ->sortable()
                     ->searchable(),
