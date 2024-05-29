@@ -91,11 +91,11 @@ class AppointmentResource extends Resource
                                 ->disableOptionWhen(function ($value, callable $get) {
                                     $selectedDate = $get('date');
                                     $currentAppointmentId = $get('id'); // Assuming 'id' is the appointment ID
-                    
+
                                     if (!$selectedDate) {
                                         return false;
                                     }
-                    
+
                                     // Get all booked time slots for the selected date, excluding the current appointment's time
                                     $bookedTimeIds = Appointment::whereDate('date', $selectedDate)
                                         ->when($currentAppointmentId, function ($query, $id) {
@@ -103,7 +103,7 @@ class AppointmentResource extends Resource
                                         })
                                         ->pluck('time_id')
                                         ->toArray();
-                    
+
                                     // Disable the option if it is in the booked time slots
                                     return in_array($value, $bookedTimeIds);
                                 })
@@ -233,10 +233,18 @@ class AppointmentResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('patient.fullname')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $query->orWhereHas('patient', function (Builder $query) use ($search) {
+                            $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                        });
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('doctor.fullname')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $query->orWhereHas('doctor', function (Builder $query) use ($search) {
+                            $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                        });
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('procedure.name')
                     ->searchable()

@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Resources\AppointmentResource;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -22,10 +23,18 @@ class LatestAppointments extends BaseWidget
             ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('patient.fullname')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $query->orWhereHas('patient', function (Builder $query) use ($search) {
+                            $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                        });
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('doctor.fullname')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $query->orWhereHas('doctor', function (Builder $query) use ($search) {
+                            $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                        });
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('procedure.name')
                     ->searchable()
