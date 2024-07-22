@@ -52,7 +52,6 @@ class AppointmentResource extends Resource
 
         return $form
             ->schema([
-
                 Wizard::make([
                     Wizard\Step::make('Schedule')
                         ->schema([
@@ -192,8 +191,6 @@ class AppointmentResource extends Resource
                                 ->columnSpanFull(),
                         ]),
                 ]),
-
-
             ]);
     }
 
