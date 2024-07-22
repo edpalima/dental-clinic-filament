@@ -555,7 +555,7 @@
                             <div class="form-group mb-3">
                                 <label for="blood_type">11. Blood Type</label>
                                 <select class="form-control @error('blood_type') is-invalid @enderror"
-                                    id="blood_type" wire:model="blood_type" required>
+                                    id="blood_type" wire:model="blood_type">
                                     <option value="">Choose...</option>
                                     <option value="A+">A+</option>
                                     <option value="A-">A-</option>

@@ -213,8 +213,7 @@ class MyProfile extends Page implements HasForms
                             'AB-' => 'AB-',
                             'O+' => 'O+',
                             'O-' => 'O-',
-                        ])
-                        ->required(),
+                        ]),
                     Forms\Components\TextInput::make('blood_pressure')
                         ->label('12. Blood Pressure')
                         ->maxLength(255)
