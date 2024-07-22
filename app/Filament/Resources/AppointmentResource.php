@@ -33,6 +33,7 @@ class AppointmentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
 
     protected static ?string $navigationGroup = 'Appointments';
+    protected static ?string $navigationLabel = 'List';
 
     protected static ?int $navigationSort = 1;
 

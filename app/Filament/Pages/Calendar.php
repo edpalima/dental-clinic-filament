@@ -11,4 +11,6 @@ class Calendar extends Page
     protected static string $view = 'filament.pages.calendar';
     
     protected static ?string $navigationGroup = 'Appointments';
+    
+    protected static ?string $navigationLabel = 'Calendar';
 }
