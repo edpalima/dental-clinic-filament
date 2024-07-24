@@ -273,11 +273,11 @@
                         Patient No: <strong>{{ $appointment->patient->id }}</strong>
                     </div>
                     <div>
-                        Payment Option: <strong>{{ $appointment->payment_options }}</strong>
+                        Payment Option: <strong>{{ $appointment->payment_options ?? 'OTC' }}</strong>
                     </div>
                     @if ($appointment->payment_options == 'gcash')
                         <div>
-                            Reference Number: <strong>{{ $appointment->reference_number }}</strong>
+                            Reference Number: <strong>{{ $appointment->id }}</strong>
                         </div>
                     @endif
                     <div>
