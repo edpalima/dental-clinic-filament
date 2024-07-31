@@ -27,14 +27,6 @@ class UsersTableSeeder extends Seeder
             ],
         ]);
 
-        DB::table('procedures')->insert([
-            'name' => 'Teeth Cleaning',
-            'description' => 'Professional teeth cleaning to remove plaque and tartar.',
-            'cost' => 50.00,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         DB::table('doctors')->insert([
             'first_name' => 'Almoro',
             'middle_name' => 'A',
