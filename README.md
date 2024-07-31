@@ -73,12 +73,11 @@ run the following command
 `php artisan migrate`
 `php artisan db:seed`
 
-
 ## Run localhost
 `php artisan serve`
 
 ## Initial Credential
 
-login to /admin
+URL: /admin
 username: admin@gmail.com
 password: admin123
