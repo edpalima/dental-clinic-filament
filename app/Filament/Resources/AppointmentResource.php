@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Filament\Resources\AppointmentResource\Pages\EditAppointment;
 use App\Filament\Resources\AppointmentResource\RelationManagers;
+// use App\Filament\Resources\Filters\AppointmentStatusFilter;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\Patient;
@@ -130,6 +131,8 @@ class AppointmentResource extends Resource
                                     ->relationship(name: 'procedure', titleAttribute: 'name')
                                     ->live()
                                     ->afterStateUpdated(fn ($state, callable $set) => $set('amount', Procedure::find($state)?->cost)),
+                                Forms\Components\TextInput::make('amount')
+                                    ->live(),
 
                                 Forms\Components\Textarea::make('notes')
                                     ->columnSpanFull(),
@@ -228,6 +231,8 @@ class AppointmentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('time.name'),
                 Tables\Columns\TextColumn::make('status')
+                    ->sortable()
+                    ->searchable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'PENDING' => 'gray',
@@ -245,7 +250,7 @@ class AppointmentResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // AppointmentStatusFilter::make(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -286,9 +291,9 @@ class AppointmentResource extends Resource
     {
         return [
             'index' => Pages\ListAppointments::route('/'),
-            'create' => Pages\CreateAppointment::route('/create'),
-            'view' => Pages\ViewAppointment::route('/{record}'),
-            'edit' => Pages\EditAppointment::route('/{record}/edit'),
+            // 'create' => Pages\CreateAppointment::route('/create'),
+            // 'view' => Pages\ViewAppointment::route('/{record}'),
+            // 'edit' => Pages\EditAppointment::route('/{record}/edit'),
         ];
     }
     protected static function getAvailableTimes(array $bookedTimes): array

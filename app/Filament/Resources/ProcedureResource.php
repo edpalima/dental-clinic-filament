@@ -41,7 +41,14 @@ class ProcedureResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('description')
+                    ->extraAttributes([
+                        'style' => 'max-width: 600px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+                    ])
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cost')
                     ->prefix('₱')
@@ -59,7 +66,7 @@ class ProcedureResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -80,9 +87,9 @@ class ProcedureResource extends Resource
     {
         return [
             'index' => Pages\ListProcedures::route('/'),
-            'create' => Pages\CreateProcedure::route('/create'),
-            'view' => Pages\ViewProcedure::route('/{record}'),
-            'edit' => Pages\EditProcedure::route('/{record}/edit'),
+            // 'create' => Pages\CreateProcedure::route('/create'),
+            // 'view' => Pages\ViewProcedure::route('/{record}'),
+            // 'edit' => Pages\EditProcedure::route('/{record}/edit'),
         ];
     }
 }

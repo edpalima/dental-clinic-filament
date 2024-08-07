@@ -128,6 +128,8 @@ class CalendarWidget extends FullCalendarWidget
                                 ->relationship(name: 'procedure', titleAttribute: 'name')
                                 ->live()
                                 ->afterStateUpdated(fn ($state, callable $set) => $set('amount', Procedure::find($state)?->cost)),
+                            Forms\Components\TextInput::make('amount')
+                                ->live(),
 
                             Forms\Components\Textarea::make('notes')
                                 ->columnSpanFull(),
@@ -183,6 +185,4 @@ class CalendarWidget extends FullCalendarWidget
     {
         return false;
     }
-
-    
 }
