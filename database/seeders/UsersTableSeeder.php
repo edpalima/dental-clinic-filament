@@ -27,18 +27,6 @@ class UsersTableSeeder extends Seeder
             ],
         ]);
 
-        DB::table('doctors')->insert([
-            'first_name' => 'Almoro',
-            'middle_name' => 'A',
-            'last_name' => 'Santiago',
-            'specialization' => 'Dentistry',
-            'contact_no' => '0987654321',
-            'email' => 'almorosantiago@example.com',
-            'password' => Hash::make('password'), // Or use bcrypt('password')
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $times = [
             '08:00 AM' => '09:00 AM',
             '09:00 AM' => '10:00 AM',

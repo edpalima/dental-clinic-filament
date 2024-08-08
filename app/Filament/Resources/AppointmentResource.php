@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Filament\Resources\AppointmentResource\Pages\EditAppointment;
 use App\Filament\Resources\AppointmentResource\RelationManagers;
+use App\Filament\Resources\AppointmentResource\RelationManagers\ItemsRelationManager;
 // use App\Filament\Resources\Filters\AppointmentStatusFilter;
 use App\Models\Appointment;
 use App\Models\Doctor;
@@ -60,7 +61,7 @@ class AppointmentResource extends Resource
                 Section::make()
                     ->schema([
                         // Details Section
-                        Fieldset::make('Schedule')
+                        Fieldset::make('SCHEDULE')
                             ->schema([
                                 Forms\Components\DatePicker::make('date')
                                     ->required()
@@ -68,7 +69,7 @@ class AppointmentResource extends Resource
                                     ->live()
                                     ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
                                     ->afterStateUpdated(fn ($state, callable $get, callable $set) => $set('time_id', null)),
-                                Forms\Components\Radio::make('time_id')
+                                Forms\Components\Select::make('time_id')
                                     ->label('Appointment Time')
                                     ->options(function (callable $get) {
                                         $selectedDate = $get('date');
@@ -112,7 +113,7 @@ class AppointmentResource extends Resource
                             ]),
 
                         // Assign Section
-                        Fieldset::make('Details')
+                        Fieldset::make('DETAILS')
                             ->schema([
                                 $user->role == 'ADMIN' ?
                                     Forms\Components\Select::make('patient_id')
@@ -129,13 +130,12 @@ class AppointmentResource extends Resource
                                     ->required(),
                                 Forms\Components\Select::make('procedure_id')
                                     ->relationship(name: 'procedure', titleAttribute: 'name')
+                                    ->reactive()
                                     ->live()
-                                    ->afterStateUpdated(fn ($state, callable $set) => $set('amount', Procedure::find($state)?->cost)),
-                                Forms\Components\TextInput::make('amount')
+                                // ->afterStateUpdated(fn ($state, callable $set) => $set('amount', Procedure::find($state)?->cost))
+                                ,
+                                Forms\Components\Hidden::make('amount')
                                     ->live(),
-
-                                Forms\Components\Textarea::make('notes')
-                                    ->columnSpanFull(),
                                 $user->role == 'ADMIN'
                                     ? Forms\Components\Select::make('status')
                                     ->options([
@@ -155,6 +155,9 @@ class AppointmentResource extends Resource
                                     ->required()
                                     ->live()
                                     ->hiddenOn('create'), // Visible only on create
+
+                                Forms\Components\Textarea::make('notes')
+                                    ->columnSpanFull(),
 
                                 // Cancelled reason field
                                 Forms\Components\Hidden::make('cancelled_reason_visible')
@@ -283,7 +286,7 @@ class AppointmentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ItemsRelationManager::class
         ];
     }
 
@@ -291,9 +294,9 @@ class AppointmentResource extends Resource
     {
         return [
             'index' => Pages\ListAppointments::route('/'),
-            // 'create' => Pages\CreateAppointment::route('/create'),
-            // 'view' => Pages\ViewAppointment::route('/{record}'),
-            // 'edit' => Pages\EditAppointment::route('/{record}/edit'),
+            'create' => Pages\CreateAppointment::route('/create'),
+            'view' => Pages\ViewAppointment::route('/{record}'),
+            'edit' => Pages\EditAppointment::route('/{record}/edit'),
         ];
     }
     protected static function getAvailableTimes(array $bookedTimes): array

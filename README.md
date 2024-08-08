@@ -81,3 +81,7 @@ run the following command
 URL: /admin
 username: admin@gmail.com
 password: admin123
+
+## Reset Database
+`php artisan migrate:refresh`
+`php artisan db:seed`

@@ -57,7 +57,7 @@ class CalendarWidget extends FullCalendarWidget
             Section::make()
                 ->schema([
                     // Details Section
-                    Fieldset::make('Schedule')
+                    Fieldset::make('SCHEDULE')
                         ->schema([
                             Forms\Components\DatePicker::make('date')
                                 ->required()
@@ -65,7 +65,7 @@ class CalendarWidget extends FullCalendarWidget
                                 ->live()
                                 ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
                                 ->afterStateUpdated(fn ($state, callable $get, callable $set) => $set('time_id', null)),
-                            Forms\Components\Radio::make('time_id')
+                            Forms\Components\Select::make('time_id')
                                 ->label('Appointment Time')
                                 ->options(function (callable $get) {
                                     $selectedDate = $get('date');
@@ -109,7 +109,7 @@ class CalendarWidget extends FullCalendarWidget
                         ]),
 
                     // Assign Section
-                    Fieldset::make('Details')
+                    Fieldset::make('DETAILS')
                         ->schema([
                             $user->role == 'ADMIN' ?
                                 Forms\Components\Select::make('patient_id')

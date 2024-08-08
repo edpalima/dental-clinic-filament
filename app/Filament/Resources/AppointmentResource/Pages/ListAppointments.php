@@ -32,24 +32,29 @@ class ListAppointments extends ListRecords
 
     public function getTabs(): array
     {
-        $tabs = ['all' => Tab::make('All')->badge($this->getModel()::count())];
-
-        $appointments = Appointment::select('status', DB::raw('count(*) as total'))
+        $tabs = [
+            'all' => Tab::make('All')
+                ->badge($this->getModel()::count())
+                ->modifyQueryUsing(function ($query) {
+                    // No need to modify the query, it will show all appointments
+                    return $query;
+                }),
+        ];
+    
+        $statuses = ['PENDING', 'CONFIRMED', 'CANCELLED', 'REJECTED'];
+        $appointmentCounts = Appointment::select('status', DB::raw('count(*) as total'))
+            ->whereIn('status', $statuses)
             ->groupBy('status')
-            ->orderBy('status', 'asc')
-            ->get();
-
-        foreach ($appointments as $appointment) {
-            $status = $appointment->status;
-            $slug = $status;
-
-            $tabs[$slug] = Tab::make($status)
-                ->badge($appointment->total)
-                ->modifyQueryUsing(function ($query) use ($appointment) {
-                    return $query->where('status', $appointment->status);
+            ->pluck('total', 'status');
+    
+        foreach ($statuses as $status) {
+            $tabs[strtolower($status)] = Tab::make($status)
+                ->badge($appointmentCounts->get($status, 0))
+                ->modifyQueryUsing(function ($query) use ($status) {
+                    return $query->where('status', $status);
                 });
         }
-
+    
         return $tabs;
     }
 }

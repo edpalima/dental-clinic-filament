@@ -1,6 +1,8 @@
 <?php
 
 namespace Database\Seeders;
+
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,23 +15,29 @@ class PatientSeeder extends Seeder
      */
     public function run(): void
     {
+        $firstname = 'Brooke';
+        $middlename = 'D';
+        $lastname = 'Rasmussen';
+        $email = 'patient@gmail.com';
+        $password = Hash::make('password');
+
         DB::table('patients')->insert([
             [
-                'first_name' => 'Brooke',
-                'middle_name' => 'Carla Vaughn',
-                'last_name' => 'Rasmussen',
+                'first_name' => $firstname,
+                'middle_name' => $middlename,
+                'last_name' => $lastname,
                 'nickname' => 'Holly Bell',
                 'religion' => 'Ipsam et culpa fuga',
                 'nationality' => 'Voluptates velit od',
-                'birth_date' => null,
+                'birth_date' => '1998-03-10',
                 'gender' => 'male',
                 'address' => 'Reprehenderit solut',
                 'contact_no' => '409',
                 'occupation' => 'Maiores suscipit mod',
                 'dental_insurance' => 'Itaque dolore et ali',
                 'insurance_effective_date' => '1972-05-03',
-                'email' => 'patient@gmail.com',
-                'password' => Hash::make('password'),
+                'email' => $email,
+                'password' => $password,
                 'guardian_name' => 'Driscoll Cotton',
                 'guardian_occupation' => 'Et quam aut aut repr',
                 'referrer' => 'Incidunt minima mol',
@@ -64,6 +72,19 @@ class PatientSeeder extends Seeder
                 'updated_at' => now(),
             ],
             // Additional patients can be added here
+        ]);
+
+        // Create login for patients
+        DB::table('users')->insert([
+            [
+                'name' => $firstname . ' ' . $middlename . ' ' . $lastname,
+                'email' => $email,
+                'password' => $password,
+                'role' => User::ROLE_PATIENT,
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
         ]);
     }
 }

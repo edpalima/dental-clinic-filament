@@ -46,6 +46,11 @@ class Appointment extends Model
         return $this->belongsTo(Time::class);
     }
 
+    public function items()
+    {
+        return $this->hasMany(Item::class);
+    }
+
     public static function getBookedTimes($doctorId, $date)
     {
         return self::where('doctor_id', $doctorId)
