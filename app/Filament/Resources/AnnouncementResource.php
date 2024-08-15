@@ -28,7 +28,7 @@ class AnnouncementResource extends Resource
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextArea::make('description')
+                Forms\Components\Textarea::make('description')
                     ->required(),
                 Forms\Components\FileUpload::make('image_path')
                     ->label('Image')
