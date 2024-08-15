@@ -56,11 +56,55 @@
     </section><!-- End Hero -->
 
     <main id="main">
+        <!-- ======= Announcement Section ======= -->
+        <div class="container my-5">
+            @if ($announcements->count())
+                <h1 class="text-center mb-4">Announcements</h1>
+                <div id="announcementCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @foreach ($announcements->chunk(3) as $index => $announcementChunk)
+                            <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                                <div class="row">
+                                    @foreach ($announcementChunk as $announcement)
+                                        <div class="col-md-4">
+                                            <div class="card">
+                                                @if ($announcement->image_path)
+                                                    <img src="{{ asset('storage/' . $announcement->image_path) }}"
+                                                        class="card-img-top" alt="{{ $announcement->title }}">
+                                                @endif
+                                                <div class="card-body">
+                                                    <h5 class="card-title d-flex justify-content-center">{{ $announcement->title }}</h5>
+                                                    <p class="card-text">{{ $announcement->description }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#announcementCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#announcementCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            @endif
+        </div>
+
+        <!-- End Announcement Section -->
 
         <!-- ======= Featured Services Section ======= -->
         <section id="featured-services" class="featured-services">
             <div class="container" data-aos="fade-up">
 
+                <h1 class="text-center mb-4">Services</h1>
                 <div class="row">
                     <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
                         <div class="icon-box" data-aos="fade-up" data-aos-delay="100">

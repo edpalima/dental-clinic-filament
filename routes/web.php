@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,9 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('homepage.index');
-});
+// Route::get('/', function () {
+//     return view('homepage.index');
+// });
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/patient-registration', function () {
     return view('patient-registration.index');

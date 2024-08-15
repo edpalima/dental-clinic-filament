@@ -1807,3 +1807,13 @@ section {
   text-align: center;
   font-size: 13px;
 }
+
+.carousel-item img {
+  max-height: 300px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.carousel-inner .row {
+  justify-content: center;
+}
