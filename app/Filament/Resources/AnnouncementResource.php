@@ -53,8 +53,9 @@ class AnnouncementResource extends Resource
                     ->limit(50),
                 Tables\Columns\TextColumn::make('description')
                     ->limit(50),
-                Tables\Columns\TextColumn::make('image_path')
+                Tables\Columns\ImageColumn::make('image_path')
                     ->label('Image')
+                    ->square()
                     ->size(50),
                 Tables\Columns\TextColumn::make('is_active'),
 
