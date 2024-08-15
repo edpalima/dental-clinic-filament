@@ -57,7 +57,8 @@ class AnnouncementResource extends Resource
                     ->label('Image')
                     ->square()
                     ->size(50),
-                Tables\Columns\TextColumn::make('is_active'),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->boolean(),
 
             ])
             ->filters([
