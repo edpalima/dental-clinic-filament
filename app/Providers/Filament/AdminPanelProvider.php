@@ -44,7 +44,7 @@ class AdminPanelProvider extends PanelProvider
             ->font('Poppins')
             // ->sidebarCollapsibleOnDesktop()
             ->sidebarFullyCollapsibleOnDesktop()
-            ->viteTheme('resources/css/filament/admin/theme.css')
+            // ->viteTheme('resources/css/filament/admin/theme.css')
             // ->darkMode(true)
             ->brandLogo(asset('assets/img/logo.png'))
             ->favicon(asset('assets/img/logo-circle.png'))
