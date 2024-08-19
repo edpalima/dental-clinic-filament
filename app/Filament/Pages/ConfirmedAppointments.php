@@ -22,6 +22,16 @@ class ConfirmedAppointments extends Page implements Tables\Contracts\HasTable
         return Appointment::query()->confirmed();
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return Appointment::query()->confirmed()->count();
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'success';
+    }
+
     protected function getTableColumns(): array
     {
         return [

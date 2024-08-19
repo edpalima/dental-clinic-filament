@@ -34,15 +34,17 @@ class AdminPanelProvider extends PanelProvider
             ->emailVerification()
             ->profile()
             ->colors([
-                'danger' => Color::Red,
-                'gray' => Color::Slate,
-                'info' => Color::Blue,
+                // 'danger' => Color::Red,
+                // 'gray' => Color::Slate,
+                // 'info' => Color::Blue,
                 'primary' => '#061c34',
-                'success' => Color::Emerald,
-                'warning' => Color::Orange,
+                // 'success' => Color::Emerald,
+                // 'warning' => Color::Orange,
             ])
             ->font('Poppins')
-
+            // ->sidebarCollapsibleOnDesktop()
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->viteTheme('resources/css/filament/admin/theme.css')
             // ->darkMode(true)
             ->brandLogo(asset('assets/img/logo.png'))
             ->favicon(asset('assets/img/logo-circle.png'))

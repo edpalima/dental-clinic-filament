@@ -1,0 +1,17 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+@layer components {
+  /* .fi-section-content-ctn {
+    @apply border border-yellow;
+  } */
+
+  .btn-primary {
+    @apply bg-primary text-white py-2 px-4 rounded;
+  }
+  
+  .btn-primary:hover {
+    @apply bg-opacity-90;
+  }
+}

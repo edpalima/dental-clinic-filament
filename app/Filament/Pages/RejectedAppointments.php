@@ -22,6 +22,16 @@ class RejectedAppointments extends Page implements Tables\Contracts\HasTable
         return Appointment::query()->rejected();
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return Appointment::query()->rejected()->count();
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'danger';
+    }
+
     protected function getTableColumns(): array
     {
         return [

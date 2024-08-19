@@ -1,0 +1,4 @@
+/* resources/css/filament-custom.css */
+.nav-item-active {
+  @apply bg-blue-600 text-white; /* Customize colors as needed */
+}

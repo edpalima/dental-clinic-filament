@@ -22,6 +22,16 @@ class CancelledAppointments extends Page implements Tables\Contracts\HasTable
         return Appointment::query()->cancelled();
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return Appointment::query()->cancelled()->count();
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'warning';
+    }
+
     protected function getTableColumns(): array
     {
         return [

@@ -22,6 +22,15 @@ class PendingAppointments extends Page implements Tables\Contracts\HasTable
         return Appointment::query()->pending();
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return Appointment::query()->pending()->count();
+    }
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'primary';
+    }
+
     protected function getTableColumns(): array
     {
         return [

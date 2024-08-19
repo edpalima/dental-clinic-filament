@@ -17,6 +17,8 @@
 
         @filamentStyles
         @vite('resources/css/app.css')
+
+        <link rel="stylesheet" href="{{ mix('css/filament-custom.css') }}">
     </head>
 
     <body class="antialiased">

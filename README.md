@@ -70,6 +70,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 run the following command
 
 `composer install`
+`npm run build`
 `php artisan migrate`
 `php artisan db:seed`
 `php artisan storage:link`
