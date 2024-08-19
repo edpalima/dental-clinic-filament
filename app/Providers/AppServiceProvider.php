@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
                     ->label('Settings')
                     ->collapsed(),
                 NavigationGroup::make()
-                    ->label('User Management'),
+                    ->label('Accounts'),
                 NavigationGroup::make()
                     ->label('Account'),
             ]);
