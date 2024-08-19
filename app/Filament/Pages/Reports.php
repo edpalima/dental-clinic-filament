@@ -13,7 +13,7 @@ class Reports extends Page
 
     protected static string $view = 'filament.pages.reports';
 
-    protected static ?string $navigationGroup = 'Appointments';
+    protected static ?string $navigationGroup = 'Settings';
     protected static ?string $navigation = 'Appointments';
     protected static ?int $navigationSort = 2;
 

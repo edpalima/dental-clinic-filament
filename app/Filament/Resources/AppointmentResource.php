@@ -180,25 +180,25 @@ class AppointmentResource extends Resource
         });
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        $query = static::getModel()::query();
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     $query = static::getModel()::query();
 
-        $user = Auth::user();
+    //     $user = Auth::user();
 
-        if ($user->role === 'PATIENT') {
-            $patient = $user->patient;
+    //     if ($user->role === 'PATIENT') {
+    //         $patient = $user->patient;
 
-            if ($patient) {
-                $query->where('patient_id', $patient->id);
-            } else {
-                // Handle case where the user is a PATIENT but has no associated patient record
-                $query->whereNull('patient_id');
-            }
-        }
+    //         if ($patient) {
+    //             $query->where('patient_id', $patient->id);
+    //         } else {
+    //             // Handle case where the user is a PATIENT but has no associated patient record
+    //             $query->whereNull('patient_id');
+    //         }
+    //     }
 
-        return $query;
-    }
+    //     return $query;
+    // }
 
     public static function table(Table $table): Table
     {

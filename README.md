@@ -79,9 +79,17 @@ run the following command
 
 ## Initial Credential
 
-URL: /admin
+ROLE: ADMIN
 username: admin@gmail.com
 password: admin123
+
+Role: PATIENT
+username: patient@gmail.com
+password: password
+
+Role: Doctor
+username: doctor@gmail.com
+password: password
 
 ## Reset Database
 `php artisan migrate:refresh`
