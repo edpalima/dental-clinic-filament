@@ -234,6 +234,9 @@ class AppointmentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('time.name'),
                 Tables\Columns\TextColumn::make('status')
+                    ->visible(
+                        true
+                    )
                     ->sortable()
                     ->searchable()
                     ->badge()

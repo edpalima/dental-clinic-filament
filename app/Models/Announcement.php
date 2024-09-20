@@ -13,6 +13,8 @@ class Announcement extends Model
         'title',
         'description',
         'image_path',
+        'start_date',
+        'end_date',
         'is_active'
     ];
 

@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AnnouncementResource\Pages;
-use App\Filament\Resources\AnnouncementResource\RelationManagers;
+use App\Filament\Resources\InactiveAnnouncementResource\Pages;
+use App\Filament\Resources\InactiveAnnouncementResource\RelationManagers;
 use App\Models\Announcement;
 use App\Models\User;
 use Carbon\Carbon;
@@ -17,12 +17,12 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Illuminate\Support\Facades\Auth;
 
-class AnnouncementResource extends Resource
+class InactiveAnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;
-    protected static ?string $navigationIcon = 'heroicon-o-check';
-    protected static ?string $slug = 'announcements/active';
-    protected static ?string $navigationLabel = 'Active';
+    protected static ?string $navigationIcon = 'heroicon-o-x-mark';
+    protected static ?string $slug = 'announcements/inactive';
+    protected static ?string $navigationLabel = 'Inactive';
     protected static ?string $navigationGroup = 'Announcements';
 
     public static function form(Form $form): Form
@@ -73,15 +73,15 @@ class AnnouncementResource extends Resource
                     ->square()
                     ->size(50),
                 Tables\Columns\TextColumn::make('start_date')
+                    ->label('Start Date')
                     ->sortable()
                     ->searchable()
-                    ->label('Start Date')
                     ->dateTime('F j, Y, g:i a') // Display date in a human-readable format
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end_date')
+                    ->label('End Date')
                     ->sortable()
                     ->searchable()
-                    ->label('End Date')
                     ->dateTime('F j, Y, g:i a') // Display date in a human-readable format
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
@@ -113,9 +113,9 @@ class AnnouncementResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAnnouncements::route('/'),
-            'create' => Pages\CreateAnnouncement::route('/create'),
-            'edit' => Pages\EditAnnouncement::route('/{record}/edit'),
+            'index' => Pages\ListInactiveAnnouncements::route('/'),
+            'create' => Pages\CreateInactiveAnnouncement::route('/create'),
+            'edit' => Pages\EditInactiveAnnouncement::route('/{record}/edit'),
         ];
     }
 
@@ -129,8 +129,15 @@ class AnnouncementResource extends Resource
         $currentDateTime = Carbon::now();
 
         return parent::getEloquentQuery()
-            ->where('start_date', '<=', $currentDateTime)
-            ->where('end_date', '>=', $currentDateTime)
-            ->where('is_active', false);
+            ->where(function ($query) use ($currentDateTime) {
+                $query->where('start_date', '>', $currentDateTime)
+                    ->orWhere('end_date', '<', $currentDateTime)
+                    ->orWhere('is_active', false);
+            });
+    }
+    public static function getTitle(): string
+
+    {
+        return 'Inactive Announcements';
     }
 }

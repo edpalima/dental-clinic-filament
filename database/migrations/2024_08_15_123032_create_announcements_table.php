@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('image_path');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->boolean('is_active');
             $table->timestamps();
         });
