@@ -57,9 +57,9 @@ class CancelledAppointments extends Page implements Tables\Contracts\HasTable
                 ->sortable(),
             Tables\Columns\TextColumn::make('procedure.cost')
                 ->label("Cost")
+                ->formatStateUsing(fn($state) => number_format($state, 2))
                 ->searchable()
-                ->sortable()
-                ->prefix('₱'),
+                ->sortable(),
             Tables\Columns\TextColumn::make('date')
                 ->date()
                 ->sortable(),

@@ -33,7 +33,6 @@ class ProcedureResource extends Resource
                 Forms\Components\TextInput::make('cost')
                     ->required()
                     ->numeric()
-                    ->prefix('₱'),
             ]);
     }
 
@@ -51,7 +50,7 @@ class ProcedureResource extends Resource
                     ])
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cost')
-                    ->prefix('₱')
+                    ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
