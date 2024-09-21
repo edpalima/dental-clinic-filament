@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
                 NavigationGroup::make()
                     ->label('People'),
                 NavigationGroup::make()
-                    ->label('Announcement'),
+                    ->label('Announcements'),
                 NavigationGroup::make()
                     ->label('Settings'),
                 // ->collapsed(),
