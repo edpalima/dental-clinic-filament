@@ -131,6 +131,6 @@ class AnnouncementResource extends Resource
         return parent::getEloquentQuery()
             ->where('start_date', '<=', $currentDateTime)
             ->where('end_date', '>=', $currentDateTime)
-            ->where('is_active', false);
+            ->where('is_active', true);
     }
 }
