@@ -131,8 +131,7 @@ class InactiveAnnouncementResource extends Resource
         return parent::getEloquentQuery()
             ->where(function ($query) use ($currentDateTime) {
                 $query->where('start_date', '>', $currentDateTime)
-                    ->orWhere('end_date', '<', $currentDateTime)
-                    ->orWhere('is_active', false);
+                    ->orWhere('end_date', '<', $currentDateTime);
             });
     }
     public static function getTitle(): string
