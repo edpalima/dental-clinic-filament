@@ -20,6 +20,7 @@ use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\DB;
 use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentsSummary extends Report
 {
@@ -167,5 +168,15 @@ class AppointmentsSummary extends Report
                 'status' => $appointment->status,
             ];
         });
+    }
+
+    public static function canAccess(): bool
+    {
+        return Auth::user()->isAdmin();
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return Auth::user()->isAdmin();
     }
 }
