@@ -118,8 +118,10 @@ class AppointmentsSummary extends Report
                 Select::make('status')
                     ->placeholder('Status')
                     ->options([
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
+                        'PENDING' => 'Pending',
+                        'CONFIRMED' => 'Confirmed',
+                        'CANCELLED' => 'Cancelled',
+                        'REJECTED' => 'Rejected',
                     ]),
             ]);
     }
