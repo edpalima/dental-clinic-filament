@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class DoctorResource extends Resource
 {
@@ -51,9 +52,14 @@ class DoctorResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('first_name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('last_name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('specialization')
                     ->searchable(),
@@ -72,6 +78,7 @@ class DoctorResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -89,8 +96,8 @@ class DoctorResource extends Resource
         return [
             'index' => Pages\ListDoctors::route('/'),
             'create' => Pages\CreateDoctor::route('/create'),
-            'view' => Pages\ViewDoctor::route('/{record}'),
-            'edit' => Pages\EditDoctor::route('/{record}/edit'),
+            // 'view' => Pages\ViewDoctor::route('/{record}'),
+            // 'edit' => Pages\EditDoctor::route('/{record}/edit'),
         ];
     }
 }
