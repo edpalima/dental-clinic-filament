@@ -95,3 +95,9 @@ password: password
 ## Reset Database
 `php artisan migrate:refresh`
 `php artisan db:seed`
+
+## Clear Cache
+`php artisan cache:clear`
+`php artisan route:clear`
+`php artisan config:clear`
+`php artisan view:clear`
