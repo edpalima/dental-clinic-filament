@@ -97,7 +97,15 @@ class AppointmentsSummary extends Report
     {
         return $form
             ->schema([
-                DateRangeFilter::make('created_at'),
+                // DateRangeFilter::make('created_at')
+                //     ->modifyQueryUsing(
+                //         fn(Builder $query, ?Carbon $startDate, ?Carbon $endDate, $dateString) =>
+                //         $query->when(
+                //             !empty($dateString),
+                //             fn(Builder $query, $date): Builder =>
+                //             $query->whereBetween('created_at', [$startDate->subDays(3), $endDate])
+                //         )
+                //     ),
                 DatePicker::make('start_date')
                     ->placeholder('Start Date')
                     ->autofocus(),
