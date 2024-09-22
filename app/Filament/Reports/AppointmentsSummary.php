@@ -60,8 +60,9 @@ class AppointmentsSummary extends Report
                         TextColumn::make("id"),
                         TextColumn::make("patient"),
                         TextColumn::make("doctor"),
-                        TextColumn::make("status"),
                         TextColumn::make("date"),
+                        TextColumn::make("time"),
+                        TextColumn::make("status"),
                     ])
                     ->data(
                         fn(?array $filters) => $this->appointmentSummary($filters)
@@ -131,7 +132,7 @@ class AppointmentsSummary extends Report
         $query = Appointment::query()
             ->with(['patient', 'doctor'])  // Load patient and doctor relationships
             ->select(['id', 'patient_id', 'doctor_id', 'status', 'date', 'time_id'])  // Select relevant columns
-            ->orderBy('date', 'asc');
+            ->orderBy('id', 'asc');
 
         // Apply filters if provided
         if (!empty($filters)) {
@@ -170,8 +171,9 @@ class AppointmentsSummary extends Report
                 'id' => $appointment->id,
                 'patient' => $appointment->patient->fullname,
                 'doctor' => $appointment->doctor->fullname,
+                'date' => $appointment->date,
+                'time' => Carbon::parse($appointment->time->time_start)->format('h:i A'),
                 'status' => $appointment->status,
-                'date' => $appointment->date . ' ' . $appointment->time->name,
             ];
         });
     }
