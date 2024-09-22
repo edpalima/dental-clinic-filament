@@ -146,6 +146,19 @@ class AppointmentsSummary extends Report
                 });
             }
 
+            // Apply search filter for patient or doctor names
+            if (isset($filters['search'])) {
+                $query->where(function ($q) use ($filters) {
+                    $q->whereHas('patient', function ($query) use ($filters) {
+                        $query->where('first_name', 'like', '%' . $filters['search'] . '%')
+                            ->orWhere('last_name', 'like', '%' . $filters['search'] . '%');
+                    })->orWhereHas('doctor', function ($query) use ($filters) {
+                        $query->where('first_name', 'like', '%' . $filters['search'] . '%')
+                            ->orWhere('last_name', 'like', '%' . $filters['search'] . '%');
+                    });
+                });
+            }
+
             if (isset($filters['start_date']) && isset($filters['end_date'])) {
                 $query->whereBetween('date', [$filters['start_date'], $filters['end_date']]);
             }
