@@ -38,8 +38,8 @@ class AppointmentsSummary extends Report
                                 Text::make("Appointment Summary Report")
                                     ->title()
                                     ->primary(),
-                                Text::make("Appointment Summary Report")
-                                    ->subtitle(),
+                                // Text::make("Appointment Summary Report")
+                                //     ->subtitle(),
                             ]),
                         Header\Layout\HeaderColumn::make()
                             ->schema([
@@ -98,15 +98,6 @@ class AppointmentsSummary extends Report
     {
         return $form
             ->schema([
-                // DateRangeFilter::make('created_at')
-                //     ->modifyQueryUsing(
-                //         fn(Builder $query, ?Carbon $startDate, ?Carbon $endDate, $dateString) =>
-                //         $query->when(
-                //             !empty($dateString),
-                //             fn(Builder $query, $date): Builder =>
-                //             $query->whereBetween('created_at', [$startDate->subDays(3), $endDate])
-                //         )
-                //     ),
                 DatePicker::make('start_date')
                     ->placeholder('Start Date')
                     ->autofocus(),

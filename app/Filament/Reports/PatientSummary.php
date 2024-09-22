@@ -60,7 +60,7 @@ class PatientSummary extends Report
                         TextColumn::make("fullname"),
                         TextColumn::make("contact_no"),
                         TextColumn::make("gender"),
-                        TextColumn::make("email_add"),
+                        TextColumn::make("email"),
                         TextColumn::make("status"),
                         TextColumn::make("account_created"),
                     ])
@@ -134,10 +134,21 @@ class PatientSummary extends Report
                 'fullname' => $patient->first_name . ' ' . $patient->last_name,
                 'contact_no' => $patient->contact_no,
                 'gender' => ucfirst($patient->gender),
-                'email_add' => $patient->email,
+                'email' => $patient->email,
                 'status' => 'Active',
                 'account_created' => $patient->created_at->format('Y-m-d h:i A'),
             ];
         });
+    }
+
+    public static function canAccess(): bool
+    {
+        // return Auth::user()->isAdmin();
+        return false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
     }
 }

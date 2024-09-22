@@ -33,6 +33,7 @@ class Reports extends Page
 
     public static function canAccess(): bool
     {
-        return Auth::user()->isAdmin();
+        // return Auth::user()->isAdmin();
+        return false;
     }
 }
