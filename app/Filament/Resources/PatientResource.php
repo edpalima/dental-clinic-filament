@@ -11,8 +11,12 @@ use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\PatientResource\Pages;
+use App\Filament\Resources\PatientResource\Pages\CreatePatient;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PatientResource\RelationManagers;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class PatientResource extends Resource
 {
@@ -81,7 +85,9 @@ class PatientResource extends Resource
                         ->maxLength(255),
                     Forms\Components\TextInput::make('password')
                         ->password()
-                        ->required()
+                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->visible(fn ($livewire) => $livewire instanceof CreatePatient)
+                        ->rule(Password::default())
                         ->maxLength(255),
                 ])->columns(),
 
@@ -301,6 +307,7 @@ class PatientResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
