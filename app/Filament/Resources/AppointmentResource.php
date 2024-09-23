@@ -68,7 +68,7 @@ class AppointmentResource extends Resource
                                     // ->disabledDates(['2000-01-03', '2000-01-15', '2000-01-20'])
                                     ->live()
                                     ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
-                                    ->afterStateUpdated(fn ($state, callable $get, callable $set) => $set('time_id', null)),
+                                    ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null)),
                                 Forms\Components\Select::make('time_id')
                                     ->label('Appointment Time')
                                     ->options(function (callable $get) {
@@ -106,8 +106,8 @@ class AppointmentResource extends Resource
                                         // Disable the option if it is in the booked time slots
                                         return in_array($value, $bookedTimeIds);
                                     })
-                                    ->hidden(fn (callable $get) => !$get('date'))
-                                    ->required(fn (callable $get) => $get('date') !== null)
+                                    ->hidden(fn(callable $get) => !$get('date'))
+                                    ->required(fn(callable $get) => $get('date') !== null)
                                     ->extraInputAttributes(['class' => 'select-time-disable']),
 
                             ]),
@@ -118,7 +118,7 @@ class AppointmentResource extends Resource
                                 $user->role == 'ADMIN' ?
                                     Forms\Components\Select::make('patient_id')
                                     ->relationship('patient', 'first_name')
-                                    ->getOptionLabelFromRecordUsing(fn (Patient $record) => "{$record->first_name} {$record->last_name}")
+                                    ->getOptionLabelFromRecordUsing(fn(Patient $record) => "{$record->first_name} {$record->last_name}")
                                     ->required()
                                     :
                                     Forms\Components\Hidden::make('patient_id')
@@ -126,7 +126,7 @@ class AppointmentResource extends Resource
 
                                 Forms\Components\Select::make('doctor_id')
                                     ->relationship(name: 'doctor', titleAttribute: 'first_name')
-                                    ->getOptionLabelFromRecordUsing(fn (Doctor $record) => "{$record->first_name} {$record->last_name}")
+                                    ->getOptionLabelFromRecordUsing(fn(Doctor $record) => "{$record->first_name} {$record->last_name}")
                                     ->required(),
                                 Forms\Components\Select::make('procedure_id')
                                     ->relationship(name: 'procedure', titleAttribute: 'name')
@@ -161,11 +161,11 @@ class AppointmentResource extends Resource
 
                                 // Cancelled reason field
                                 Forms\Components\Hidden::make('cancelled_reason_visible')
-                                    ->default(fn ($get) => $get('status') === 'CANCELLED'),
+                                    ->default(fn($get) => $get('status') === 'CANCELLED'),
                                 Forms\Components\Textarea::make('cancelled_reason')
                                     ->label('Cancelled Reason')
-                                    ->visible(fn ($get) => $get('status') === 'CANCELLED')
-                                    ->required(fn ($record, $get) => $get('status') === 'CANCELLED')
+                                    ->visible(fn($get) => $get('status') === 'CANCELLED')
+                                    ->required(fn($record, $get) => $get('status') === 'CANCELLED')
                                     ->columnSpanFull(),
                             ]),
                     ])
@@ -213,14 +213,22 @@ class AppointmentResource extends Resource
                             $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
                         });
                     })
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $query->orWhereHas('patient', function (Builder $query) use ($direction) {
+                            $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('doctor.fullname')
                     ->searchable(query: function (Builder $query, string $search) {
                         $query->orWhereHas('doctor', function (Builder $query) use ($search) {
                             $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
                         });
                     })
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $query->orWhereHas('doctor', function (Builder $query) use ($direction) {
+                            $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('procedure.name')
                     ->searchable()
                     ->sortable(),
@@ -232,7 +240,9 @@ class AppointmentResource extends Resource
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('time.name'),
+                Tables\Columns\TextColumn::make('time.time_start')
+                    ->label('Time')
+                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('h:i A')),
                 Tables\Columns\TextColumn::make('status')
                     ->visible(
                         true
@@ -240,7 +250,7 @@ class AppointmentResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'PENDING' => 'gray',
                         'CANCELLED' => 'warning',
                         'CONFIRMED' => 'success',
@@ -274,7 +284,7 @@ class AppointmentResource extends Resource
                 //     }),
                 Tables\Actions\Action::make('download')
                     ->label('Invoice')
-                    ->url(fn (Appointment $record) => route('appointments.download-pdf', $record))
+                    ->url(fn(Appointment $record) => route('appointments.download-pdf', $record))
                     ->openUrlInNewTab()
                     ->icon('heroicon-o-arrow-down-tray'),
             ])

@@ -43,14 +43,22 @@ class PendingAppointments extends Page implements Tables\Contracts\HasTable
                         $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
                     });
                 })
-                ->sortable(),
+                ->sortable(query: function (Builder $query, string $direction) {
+                    $query->orWhereHas('patient', function (Builder $query) use ($direction) {
+                        $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
+                    });
+                }),
             Tables\Columns\TextColumn::make('doctor.fullname')
                 ->searchable(query: function (Builder $query, string $search) {
                     $query->orWhereHas('doctor', function (Builder $query) use ($search) {
                         $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
                     });
                 })
-                ->sortable(),
+                ->sortable(query: function (Builder $query, string $direction) {
+                    $query->orWhereHas('doctor', function (Builder $query) use ($direction) {
+                        $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
+                    });
+                }),
             Tables\Columns\TextColumn::make('procedure.name')
                 ->searchable()
                 ->sortable(),
@@ -62,7 +70,9 @@ class PendingAppointments extends Page implements Tables\Contracts\HasTable
             Tables\Columns\TextColumn::make('date')
                 ->date()
                 ->sortable(),
-            Tables\Columns\TextColumn::make('time.name'),
+            Tables\Columns\TextColumn::make('time.time_start')
+                ->label('Time')
+                ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('h:i A')),
             Tables\Columns\TextColumn::make('status')
                 ->sortable()
                 ->searchable()
