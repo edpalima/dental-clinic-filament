@@ -170,13 +170,13 @@ class AppointmentsSummary extends Report
         });
     }
 
-    public static function canAccess(): bool
-    {
-        return Auth::user()->isAdmin();
-    }
+    // public static function canAccess(): bool
+    // {
+    //     return Auth::user()->isAdmin();
+    // }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return Auth::user()->isAdmin();
-    }
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return Auth::user()->isAdmin();
+    // }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Patient extends Model
 {
@@ -72,5 +74,15 @@ class Patient extends Model
     public function appointments()
     {
         return $this->hasMany(Appointment::class);
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('role', function (Builder $builder) {
+            // Assuming you have access to the auth user
+            if (auth()->check() && auth()->user()->role === 'PATIENT') {
+                $builder->where('email', auth()->user()->email);
+            }
+        });
     }
 }

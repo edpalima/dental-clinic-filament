@@ -35,7 +35,9 @@ class AppServiceProvider extends ServiceProvider
                     ->label('Reports'),
                 // ->collapsed(),
                 NavigationGroup::make()
-                    ->label('Accounts'),
+                ->label('Accounts'),
+                NavigationGroup::make()
+                    ->label('Account'),
             ]);
         });
     }

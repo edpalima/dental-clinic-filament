@@ -58,6 +58,7 @@ class PatientSummary extends Report
             ->schema([
                 Body\Table::make()
                     ->columns([
+                        TextColumn::make("id"),
                         TextColumn::make("fullname"),
                         TextColumn::make("contact_no"),
                         TextColumn::make("gender"),
@@ -132,6 +133,7 @@ class PatientSummary extends Report
         // Get patient data and format the response
         return $query->get()->map(function ($patient) {
             return [
+                'id' => $patient->id,
                 'fullname' => $patient->first_name . ' ' . $patient->last_name,
                 'contact_no' => $patient->contact_no,
                 'gender' => ucfirst($patient->gender),
@@ -142,13 +144,13 @@ class PatientSummary extends Report
         });
     }
 
-    public static function canAccess(): bool
-    {
-        return Auth::user()->isAdmin();
-    }
+    // public static function canAccess(): bool
+    // {
+    //     return Auth::user()->isAdmin();
+    // }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return Auth::user()->isAdmin();
-    }
+    // public static function shouldRegisterNavigation(): bool
+    // {
+    //     return Auth::user()->isAdmin();
+    // }
 }
