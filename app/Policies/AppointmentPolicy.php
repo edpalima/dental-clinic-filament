@@ -38,7 +38,7 @@ class AppointmentPolicy
     public function update(User $user, Appointment $appointment): bool
     {
         if ($user->isPatient()) {
-            return $appointment->status === 'PENDING';
+            return in_array($appointment->status, ['PENDING', 'CANCELLED']);
         }
 
         // Allow other roles to edit
