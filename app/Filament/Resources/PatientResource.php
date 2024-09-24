@@ -62,7 +62,6 @@ class PatientResource extends Resource
                         ->maxLength(255)
                         ->required(),
                     Forms\Components\TextInput::make('contact_no')
-                        ->integer()
                         ->maxLength(255)
                         ->default(null),
 
@@ -209,8 +208,7 @@ class PatientResource extends Resource
                             'AB-' => 'AB-',
                             'O+' => 'O+',
                             'O-' => 'O-',
-                        ])
-                        ->required(),
+                        ]),
                     Forms\Components\TextInput::make('blood_pressure')
                         ->label('12. Blood Pressure')
                         ->maxLength(255)

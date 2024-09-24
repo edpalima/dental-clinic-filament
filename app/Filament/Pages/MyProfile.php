@@ -79,10 +79,8 @@ class MyProfile extends Page implements HasForms
                         ->maxLength(255)
                         ->required(),
                     Forms\Components\TextInput::make('contact_no')
-                        ->integer()
                         ->maxLength(255)
                         ->default(null),
-
                     Forms\Components\TextInput::make('address')
                         ->maxLength(255)
                         ->default(null)
