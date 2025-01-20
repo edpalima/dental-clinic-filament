@@ -56,6 +56,9 @@ class AppointmentResource extends Resource
 
         $user = Auth::user();
 
+        // Get the selected date from the query parameter
+        $selectedDate = request()->query('date'); // Fetch 'selected_date' from URL query parameters
+
         return $form
             ->schema([
                 Section::make()
@@ -65,10 +68,11 @@ class AppointmentResource extends Resource
                             ->schema([
                                 Forms\Components\DatePicker::make('date')
                                     ->required()
-                                    // ->disabledDates(['2000-01-03', '2000-01-15', '2000-01-20'])
                                     ->live()
                                     ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
+                                    ->default($selectedDate) // Set the default date if available in the query
                                     ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null)),
+
                                 Forms\Components\Select::make('time_id')
                                     ->label('Appointment Time')
                                     ->options(function (callable $get) {
@@ -109,7 +113,6 @@ class AppointmentResource extends Resource
                                     ->hidden(fn(callable $get) => !$get('date'))
                                     ->required(fn(callable $get) => $get('date') !== null)
                                     ->extraInputAttributes(['class' => 'select-time-disable']),
-
                             ]),
 
                         // Assign Section
@@ -131,11 +134,11 @@ class AppointmentResource extends Resource
                                 Forms\Components\Select::make('procedure_id')
                                     ->relationship(name: 'procedure', titleAttribute: 'name')
                                     ->reactive()
-                                    ->live()
-                                // ->afterStateUpdated(fn ($state, callable $set) => $set('amount', Procedure::find($state)?->cost))
-                                ,
+                                    ->live(),
+
                                 Forms\Components\Hidden::make('amount')
                                     ->live(),
+
                                 $user->role == 'ADMIN'
                                     ? Forms\Components\Select::make('status')
                                     ->options([
@@ -172,6 +175,7 @@ class AppointmentResource extends Resource
             ]);
     }
 
+
     public static function editForm(Form $form): Form
     {
         return static::form($form)->mutateFormDataUsing(function (array $data): array {
@@ -179,26 +183,6 @@ class AppointmentResource extends Resource
             return $data;
         });
     }
-
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     $query = static::getModel()::query();
-
-    //     $user = Auth::user();
-
-    //     if ($user->role === 'PATIENT') {
-    //         $patient = $user->patient;
-
-    //         if ($patient) {
-    //             $query->where('patient_id', $patient->id);
-    //         } else {
-    //             // Handle case where the user is a PATIENT but has no associated patient record
-    //             $query->whereNull('patient_id');
-    //         }
-    //     }
-
-    //     return $query;
-    // }
 
     public static function table(Table $table): Table
     {
@@ -271,17 +255,6 @@ class AppointmentResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                // Tables\Actions\Action::make('pdf')
-                //     ->label('PDF')
-                //     ->color('success')
-                //     ->icon('heroicon-s-arrow-down-tray')
-                //     ->action(function (Model $record) {
-                //         return response()->streamDownload(function () use ($record) {
-                //             echo Pdf::loadHtml(
-                //                 Blade::render('pdf', ['record' => $record])
-                //             )->stream();
-                //         }, $record->number . '.pdf');
-                //     }),
                 Tables\Actions\Action::make('download')
                     ->label('Invoice')
                     ->url(fn(Appointment $record) => route('appointments.download-pdf', $record))

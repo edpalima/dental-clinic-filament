@@ -78,6 +78,12 @@ class AdminPanelProvider extends PanelProvider
                 FilamentFullCalendarPlugin::make()
                     ->selectable(true)
                     ->editable(true)
+                    ->schedulerLicenseKey('null')
+                    // ->selectable()
+                    // ->timezone()
+                    // ->locale()
+                    ->plugins(['dayGrid', 'timeGrid'])
+                    ->config([])
             )
             ->plugin(
                 ReportsPlugin::make()

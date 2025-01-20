@@ -31,12 +31,64 @@ class CalendarWidget extends FullCalendarWidget
                     'id'    => $appointment->id,
                     'title' => $appointment->patient->fullName,
                     'start' => $appointment->date,
+                    'status' => $appointment->status,
                     'end'   => $appointment->date,
                     // 'url' => AppointmentResource::getUrl(name: 'view', parameters: ['record' => $appointment]),
                     // 'shouldOpenUrlInNewTab' => true
                 ];
             })
             ->toArray();
+    }
+
+    public function dayCellDidMount(): string
+    {
+        return <<<JS
+            function({ date, el }) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Reset today's time to midnight
+                const cellDate = new Date(date).setHours(0, 0, 0, 0);
+
+                if (cellDate < today) {
+                    el.classList.add('fc-day-disabled'); // Add a custom CSS class
+                    el.style.pointerEvents = 'none'; // Disable interaction
+                    el.style.backgroundColor = '#f5f5f5'; // Gray out the background
+                }
+            }
+        JS;
+    }
+
+    protected function getEventRender(): array
+    {
+        return [
+            'eventRender' => 'function(event, element) {
+                switch (event.status) {
+                    case "CONFIRMED":
+                        element.css("background-color", "#28a745"); // Green
+                        break;
+                    case "PENDING":
+                        element.css("background-color", "#ffc107"); // Yellow
+                        break;
+                    case "REJECTED":
+                        element.css("background-color", "#dc3545"); // Red
+                        break;
+                    case "REJECTED":
+                        element.css("background-color", "#6c757d"); // Gray
+                        break;
+                    default:
+                        element.css("background-color", "#007bff"); // Default Blue
+                }
+            }',
+        ];
+    }
+
+    /**
+     * Render hooks for FullCalendar
+     */
+    protected function getFullCalendarOptions(): array
+    {
+        return array_merge(parent::getFullCalendarOptions(), [
+            'dayCellDidMount' => new HtmlString($this->dayCellDidMount()),
+        ]);
     }
 
     public function getFormSchema(): array
@@ -64,7 +116,7 @@ class CalendarWidget extends FullCalendarWidget
                                 // ->disabledDates(['2000-01-03', '2000-01-15', '2000-01-20'])
                                 ->live()
                                 ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
-                                ->afterStateUpdated(fn ($state, callable $get, callable $set) => $set('time_id', null)),
+                                ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null)),
                             Forms\Components\Select::make('time_id')
                                 ->label('Appointment Time')
                                 ->options(function (callable $get) {
@@ -102,8 +154,8 @@ class CalendarWidget extends FullCalendarWidget
                                     // Disable the option if it is in the booked time slots
                                     return in_array($value, $bookedTimeIds);
                                 })
-                                ->hidden(fn (callable $get) => !$get('date'))
-                                ->required(fn (callable $get) => $get('date') !== null)
+                                ->hidden(fn(callable $get) => !$get('date'))
+                                ->required(fn(callable $get) => $get('date') !== null)
                                 ->extraInputAttributes(['class' => 'select-time-disable']),
 
                         ]),
@@ -114,7 +166,7 @@ class CalendarWidget extends FullCalendarWidget
                             $user->role == 'ADMIN' ?
                                 Forms\Components\Select::make('patient_id')
                                 ->relationship('patient', 'first_name')
-                                ->getOptionLabelFromRecordUsing(fn (Patient $record) => "{$record->first_name} {$record->last_name}")
+                                ->getOptionLabelFromRecordUsing(fn(Patient $record) => "{$record->first_name} {$record->last_name}")
                                 ->required()
                                 :
                                 Forms\Components\Hidden::make('patient_id')
@@ -122,12 +174,12 @@ class CalendarWidget extends FullCalendarWidget
 
                             Forms\Components\Select::make('doctor_id')
                                 ->relationship(name: 'doctor', titleAttribute: 'first_name')
-                                ->getOptionLabelFromRecordUsing(fn (Doctor $record) => "{$record->first_name} {$record->last_name}")
+                                ->getOptionLabelFromRecordUsing(fn(Doctor $record) => "{$record->first_name} {$record->last_name}")
                                 ->required(),
                             Forms\Components\Select::make('procedure_id')
                                 ->relationship(name: 'procedure', titleAttribute: 'name')
                                 ->live()
-                                ->afterStateUpdated(fn ($state, callable $set) => $set('amount', Procedure::find($state)?->cost)),
+                                ->afterStateUpdated(fn($state, callable $set) => $set('amount', Procedure::find($state)?->cost)),
                             Forms\Components\TextInput::make('amount')
                                 ->live(),
 
@@ -155,11 +207,11 @@ class CalendarWidget extends FullCalendarWidget
 
                             // Cancelled reason field
                             Forms\Components\Hidden::make('cancelled_reason_visible')
-                                ->default(fn ($get) => $get('status') === 'CANCELLED'),
+                                ->default(fn($get) => $get('status') === 'CANCELLED'),
                             Forms\Components\Textarea::make('cancelled_reason')
                                 ->label('Cancelled Reason')
-                                ->visible(fn ($get) => $get('status') === 'CANCELLED')
-                                ->required(fn ($record, $get) => $get('status') === 'CANCELLED')
+                                ->visible(fn($get) => $get('status') === 'CANCELLED')
+                                ->required(fn($record, $get) => $get('status') === 'CANCELLED')
                                 ->columnSpanFull(),
                         ]),
                 ])
@@ -169,8 +221,53 @@ class CalendarWidget extends FullCalendarWidget
     protected function headerActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->mountUsing(
+                    function (Forms\Form $form, array $arguments) {
+                        $form->fill([
+                            'date' => $arguments['start'] ?? null,
+                        ]);
+                    }
+                )
         ];
+    }
+
+    /**
+     * Add Alpine.js tooltips to events.
+     */
+    public function eventDidMount(): string
+    {
+        return <<<JS
+            function({ event, el }) {
+                // Add Alpine.js attributes to each event
+                el.setAttribute('x-data', '{ tooltip: false }');
+                el.setAttribute('x-on:mouseenter', 'tooltip = true');
+                el.setAttribute('x-on:mouseleave', 'tooltip = false');
+                el.classList.add('relative');
+
+                // Create a tooltip element
+                const tooltipEl = document.createElement('div');
+                tooltipEl.setAttribute('x-show', 'tooltip');
+                tooltipEl.classList.add(
+                    'absolute',
+                    'bg-gray-700',
+                    'text-white',
+                    'text-sm',
+                    'rounded',
+                    'p-2',
+                    'shadow-md',
+                    'z-10',
+                    'transform',
+                    '-translate-x-1/2',
+                    '-translate-y-full'
+                );
+                tooltipEl.style.top = '-5px'; // Positioning
+                tooltipEl.style.left = '50%'; // Centered horizontally
+                tooltipEl.textContent = event.title; // Tooltip content
+
+                el.appendChild(tooltipEl); // Attach tooltip to the event
+            }
+        JS;
     }
 
     protected function modalActions(): array
@@ -179,10 +276,5 @@ class CalendarWidget extends FullCalendarWidget
             Actions\EditAction::make(),
             Actions\DeleteAction::make(),
         ];
-    }
-
-    public static function canView(): bool
-    {
-        return false;
     }
 }

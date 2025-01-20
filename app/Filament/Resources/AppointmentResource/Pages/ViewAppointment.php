@@ -13,6 +13,10 @@ class ViewAppointment extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('back')
+                ->label('Back')
+                ->url(route('filament.admin.resources.appointments.index')) // Redirect to the appointments index page
+                ->icon('heroicon-o-arrow-left'), // Optional: Add an icon
             Actions\EditAction::make(),
         ];
     }

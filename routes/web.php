@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
@@ -37,3 +38,5 @@ Route::get(
 use App\Http\Controllers\ReportController;
 
 Route::get('/appointment-reports/pdf', [ReportController::class, 'generateAppointmentReportPdf'])->name('appointment-reports.pdf');
+
+Route::post('/appointments/fetch', [AppointmentsController::class, 'fetch'])->name('appointments.fetch');
