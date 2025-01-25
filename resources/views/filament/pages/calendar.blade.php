@@ -14,15 +14,17 @@
         <div class="mb-4 flex gap-2 items-center">
             {{-- <span class="font-semibold">Filter by Status:</span> --}}
             <button class="status-filter-btn px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
-                style="background-color: #3B82F6;" data-status="" data-color="#3B82F6">All</button>
-            <button class="status-filter-btn px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600"
-                style="background-color: #10B981;" data-status="confirmed" data-color="#10B981">Confirmed</button>
+                style="background-color: #061c34;" data-status="" data-color="#3B82F6">All</button>
             <button class="status-filter-btn px-4 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
                 style="background-color: #6B7280;" data-status="pending" data-color="#F59E0B">Pending</button>
+            <button class="status-filter-btn px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600"
+                style="background-color: #3B82F6;" data-status="confirmed" data-color="#10B981">Confirmed</button>
             <button class="status-filter-btn px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
                 style="background-color: #F59E0B;" data-status="cancelled" data-color="#EF4444">Cancelled</button>
             <button class="status-filter-btn px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600"
                 style="background-color: #EF4444;" data-status="rejected" data-color="#6B7280">Rejected</button>
+            <button class="status-filter-btn px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600"
+                style="background-color: #10B981;" data-status="completed" data-color="#6B7280">Completed</button>
         </div>
 
         <div id="calendar"></div>
@@ -107,7 +109,7 @@
                                 let bgColor;
                                 switch (event.status) {
                                     case 'CONFIRMED':
-                                        bgColor = '#10B981'; // Green for confirmed
+                                        bgColor = '#3B82F6'; // Green for confirmed
                                         break;
                                     case 'PENDING':
                                         bgColor = '#6B7280'; // Gray for archived
@@ -118,8 +120,11 @@
                                     case 'REJECTED':
                                         bgColor = '#EF4444'; // Red for cancelled
                                         break;
+                                    case 'COMPLETED':
+                                        bgColor = '#10B981'; // Green for Completed
+                                        break;
                                     default:
-                                        bgColor = '#3B82F6'; // Blue for default/others
+                                        bgColor = '#061c34'; // primary color
                                         break;
                                 }
 

@@ -8,28 +8,28 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use App\Models\Appointment;
 use Illuminate\Database\Eloquent\Builder;
 
-class CancelledAppointments extends Page implements Tables\Contracts\HasTable
+class CompletedAppointments extends Page implements Tables\Contracts\HasTable
 {
     use InteractsWithTable;
-    protected static ?string $navigationIcon = 'heroicon-o-x-circle';
-    protected static string $view = 'filament.pages.cancelled-appointments';
+    protected static ?string $navigationIcon = 'heroicon-o-check-circle';
+    protected static string $view = 'filament.pages.completed-appointments';
     protected static ?string $navigationGroup = 'Appointments';
-    protected static ?string $navigationLabel = 'Cancelled';
-    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationLabel = 'Completed';
+    protected static ?int $navigationSort = 6;
 
     public function getTableQuery(): Builder
     {
-        return Appointment::query()->cancelled()->orderBy('id', 'desc');
+        return Appointment::query()->completed()->orderBy('id', 'desc');
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return Appointment::query()->cancelled()->count();
+        return Appointment::query()->completed()->count();
     }
 
     public static function getNavigationBadgeColor(): string|array|null
     {
-        return 'warning';
+        return 'success';
     }
 
     protected function getTableColumns(): array
@@ -71,9 +71,9 @@ class CancelledAppointments extends Page implements Tables\Contracts\HasTable
             Tables\Columns\TextColumn::make('date')
                 ->date()
                 ->sortable(),
-                Tables\Columns\TextColumn::make('time.time_start')
-                    ->label('Time')
-                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('h:i A')),
+            Tables\Columns\TextColumn::make('time.time_start')
+                ->label('Time')
+                ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('h:i A')),
             Tables\Columns\TextColumn::make('status')
                 ->sortable()
                 ->searchable()

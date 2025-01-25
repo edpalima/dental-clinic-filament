@@ -15,7 +15,7 @@ class Appointment extends Model
     protected $fillable = [
         'patient_id',
         'doctor_id',
-        'procedure_id',
+        'procedures',
         'date',
         'time_id',
         'notes',
@@ -28,6 +28,10 @@ class Appointment extends Model
         'approved_by',
     ];
 
+    protected $casts = [
+        'procedures' => 'array',
+    ];
+
     public function patient()
     {
         return $this->belongsTo(Patient::class);
@@ -38,10 +42,16 @@ class Appointment extends Model
         return $this->belongsTo(Doctor::class);
     }
 
-    public function procedure()
+    // public function procedure()
+    // {
+    //     return $this->belongsTo(Procedure::class);
+    // }
+
+    public function procedures()
     {
-        return $this->belongsTo(Procedure::class);
+        return $this->belongsToMany(Procedure::class, 'appointment_procedure');
     }
+
 
     public function time()
     {
@@ -81,6 +91,11 @@ class Appointment extends Model
     public function scopeRejected($query)
     {
         return $query->where('status', 'REJECTED');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'COMPLETED');
     }
 
     protected static function booted()

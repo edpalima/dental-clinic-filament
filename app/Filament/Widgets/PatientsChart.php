@@ -14,7 +14,7 @@ class PatientsChart extends ChartWidget
 
     protected function getData(): array
     {
-        $statuses = ['PENDING', 'CONFIRMED', 'CANCELLED', 'REJECTED'];
+        $statuses = ['PENDING', 'CONFIRMED', 'CANCELLED', 'REJECTED', 'COMPLETED'];
 
         $data = Appointment::select('status', DB::raw('count(*) as count'))
             ->groupBy('status')

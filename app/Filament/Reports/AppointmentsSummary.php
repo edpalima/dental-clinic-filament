@@ -115,6 +115,7 @@ class AppointmentsSummary extends Report
                         'CONFIRMED' => 'Confirmed',
                         'CANCELLED' => 'Cancelled',
                         'REJECTED' => 'Rejected',
+                        'COMPLETED' => 'Completed',
                     ]),
             ]);
     }

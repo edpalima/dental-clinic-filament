@@ -192,6 +192,7 @@ class CalendarWidget extends FullCalendarWidget
                                     'CONFIRMED' => 'CONFIRMED',
                                     'CANCELLED' => 'CANCELLED',
                                     'REJECTED' => 'REJECTED',
+                                    'COMPLETED' => 'COMPLETED',
                                 ])
                                 ->required()
                                 ->live()

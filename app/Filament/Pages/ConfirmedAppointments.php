@@ -29,7 +29,7 @@ class ConfirmedAppointments extends Page implements Tables\Contracts\HasTable
 
     public static function getNavigationBadgeColor(): string|array|null
     {
-        return 'success';
+        return 'info';
     }
 
     protected function getTableColumns(): array
@@ -81,8 +81,9 @@ class ConfirmedAppointments extends Page implements Tables\Contracts\HasTable
                 ->color(fn(string $state): string => match ($state) {
                     'PENDING' => 'gray',
                     'CANCELLED' => 'warning',
-                    'CONFIRMED' => 'success',
+                    'CONFIRMED' => 'info',
                     'REJECTED' => 'danger',
+                    'COMPLETED' => 'success',
                 }),
             Tables\Columns\TextColumn::make('created_at')
                 ->dateTime()

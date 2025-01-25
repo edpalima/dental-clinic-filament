@@ -81,8 +81,9 @@ class RejectedAppointments extends Page implements Tables\Contracts\HasTable
                 ->color(fn(string $state): string => match ($state) {
                     'PENDING' => 'gray',
                     'CANCELLED' => 'warning',
-                    'CONFIRMED' => 'success',
+                    'CONFIRMED' => 'info',
                     'REJECTED' => 'danger',
+                    'COMPLETED' => 'success',
                 }),
             Tables\Columns\TextColumn::make('created_at')
                 ->dateTime()

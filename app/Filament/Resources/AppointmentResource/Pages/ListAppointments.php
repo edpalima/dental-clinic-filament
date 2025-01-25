@@ -41,7 +41,7 @@ class ListAppointments extends ListRecords
                 }),
         ];
     
-        $statuses = ['PENDING', 'CONFIRMED', 'CANCELLED', 'REJECTED'];
+        $statuses = ['PENDING', 'CONFIRMED', 'CANCELLED', 'REJECTED', 'COMPLETED'];
         $appointmentCounts = Appointment::select('status', DB::raw('count(*) as total'))
             ->whereIn('status', $statuses)
             ->groupBy('status')

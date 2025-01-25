@@ -71,7 +71,8 @@ class AppointmentResource extends Resource
                                     ->live()
                                     ->minDate(today()->addDay()) // Ensure booking starts from tomorrow
                                     ->default($selectedDate) // Set the default date if available in the query
-                                    ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null)),
+                                    ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null))
+                                    ->disabled(fn($get) => $get('id') !== null), // Disable if editing
 
                                 Forms\Components\Select::make('time_id')
                                     ->label('Appointment Time')
@@ -88,6 +89,15 @@ class AppointmentResource extends Resource
 
                                         // Get all available time slots
                                         $allTimeSlots = Time::pluck('name', 'id')->toArray();
+
+                                        // Add labels for booked time slots
+                                        if($get('id') == null) {
+                                            foreach ($allTimeSlots as $id => $name) {
+                                                if (in_array($id, $bookedTimeIds)) {
+                                                    $allTimeSlots[$id] = $name . ' (Not Available)'; // Add "Not Available" label
+                                                }
+                                            }
+                                        }
 
                                         return $allTimeSlots;
                                     })
@@ -111,6 +121,7 @@ class AppointmentResource extends Resource
                                         return in_array($value, $bookedTimeIds);
                                     })
                                     ->hidden(fn(callable $get) => !$get('date'))
+                                    ->disabled(fn($get) => $get('id') !== null) // Disable if editing
                                     ->required(fn(callable $get) => $get('date') !== null)
                                     ->extraInputAttributes(['class' => 'select-time-disable']),
                             ]),
@@ -131,13 +142,26 @@ class AppointmentResource extends Resource
                                     ->relationship(name: 'doctor', titleAttribute: 'first_name')
                                     ->getOptionLabelFromRecordUsing(fn(Doctor $record) => "{$record->first_name} {$record->last_name}")
                                     ->required(),
-                                Forms\Components\Select::make('procedure_id')
-                                    ->relationship(name: 'procedure', titleAttribute: 'name')
-                                    ->reactive()
-                                    ->live(),
 
+                                // Procedure Multiple Selection
+                                Forms\Components\Select::make('procedures')
+                                    ->label('Procedure(s)')
+                                    ->multiple() // Allow multiple selection
+                                    // ->relationship('procedures', 'name') // Relating to the procedures table by 'name'
+                                    ->reactive() // Make it reactive
+                                    ->live() // Make it live-updating
+                                    ->options(function (callable $get) {
+                                        // Optionally, you can filter or order the procedures, for example:
+                                        return Procedure::orderBy('name')->pluck('name', 'id'); // Show all procedures in a list, ordered by name
+                                    }),
+
+                                // Amount with notice message
                                 Forms\Components\Hidden::make('amount')
                                     ->live(),
+                                // Forms\Components\Text::make('amount')
+                                //     ->label('Amount')
+                                //     ->helperText('Price may vary')
+                                //     ->required(),
 
                                 $user->role == 'ADMIN'
                                     ? Forms\Components\Select::make('status')
@@ -146,6 +170,7 @@ class AppointmentResource extends Resource
                                         'CONFIRMED' => 'CONFIRMED',
                                         'CANCELLED' => 'CANCELLED',
                                         'REJECTED' => 'REJECTED',
+                                        'COMPLETED' => 'COMPLETED', // Added Completed status
                                     ])
                                     ->required()
                                     ->live()
@@ -158,6 +183,20 @@ class AppointmentResource extends Resource
                                     ->required()
                                     ->live()
                                     ->hiddenOn('create'), // Visible only on create
+
+                                // No-show Checkbox for Confirmed Status
+                                // Forms\Components\Checkbox::make('no_show')
+                                //     ->label('No Show')
+                                //     ->required(fn($get) => $get('status') === 'CONFIRMED')
+                                //     ->hidden(fn($get) => $get('status') !== 'CONFIRMED'),
+
+                                // Agreement Checkbox for Patients
+                                $user->role == 'PATIENT' ?
+                                    Forms\Components\Checkbox::make('agreement')
+                                    ->label('I agree to the terms and conditions')
+                                    ->required()
+                                    ->helperText('Please agree before proceeding.')
+                                    : Forms\Components\Hidden::make('agreement'),
 
                                 Forms\Components\Textarea::make('notes')
                                     ->columnSpanFull(),
@@ -174,7 +213,6 @@ class AppointmentResource extends Resource
                     ])
             ]);
     }
-
 
     public static function editForm(Form $form): Form
     {
@@ -213,7 +251,19 @@ class AppointmentResource extends Resource
                             $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
                         });
                     }),
-                Tables\Columns\TextColumn::make('procedure.name')
+                Tables\Columns\TextColumn::make('procedures')
+                    ->getStateUsing(function ($record) {
+                        if (is_array($record->procedures)) {
+                            // Get procedure names and join them with a comma
+                            $procedureNames = Procedure::whereIn('id', $record->procedures)->pluck('name')->toArray();
+                            $namesString = implode(', ', $procedureNames);
+
+                            // Truncate to 20 characters
+                            return strlen($namesString) > 15 ? substr($namesString, 0, 15) . '...' : $namesString;
+                        }
+                        return '';
+                    })
+                    ->label('Procedures')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('procedure.cost')
@@ -237,8 +287,9 @@ class AppointmentResource extends Resource
                     ->color(fn(string $state): string => match ($state) {
                         'PENDING' => 'gray',
                         'CANCELLED' => 'warning',
-                        'CONFIRMED' => 'success',
+                        'CONFIRMED' => 'info',
                         'REJECTED' => 'danger',
+                        'COMPLETED' => 'success',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
