@@ -26,6 +26,9 @@ return new class extends Migration
             $table->string('reference_number')->nullable();
             $table->string('status')->nullable()->default('PENDING');
             $table->string('approved_by')->nullable();
+            $table->boolean('no_show')->default(false);
+            $table->boolean('archived')->default(false);
+            $table->boolean('agreement_accepted')->default(false);
             $table->timestamps();
         });
     }

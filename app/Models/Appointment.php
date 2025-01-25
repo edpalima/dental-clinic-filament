@@ -26,6 +26,9 @@ class Appointment extends Model
         'reference_number',
         'status',
         'approved_by',
+        'agreement_accepted',
+        'archived',
+        'no_show',
     ];
 
     protected $casts = [
@@ -98,6 +101,11 @@ class Appointment extends Model
         return $query->where('status', 'COMPLETED');
     }
 
+    public function scopeArchived($query)
+    {
+        return $query->where('archived', true);
+    }
+
     protected static function booted()
     {
         static::addGlobalScope('userRoleFilter', function (Builder $builder) {
@@ -113,6 +121,8 @@ class Appointment extends Model
                     // If the user is ADMIN, no filtering is applied, so they see all appointments.
                 }
             }
+
+            $builder->where('archived', false);
         });
     }
 }

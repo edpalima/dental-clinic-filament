@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Blade;
 
 class AppointmentResource extends Resource
@@ -91,7 +92,7 @@ class AppointmentResource extends Resource
                                         $allTimeSlots = Time::pluck('name', 'id')->toArray();
 
                                         // Add labels for booked time slots
-                                        if($get('id') == null) {
+                                        if ($get('id') == null) {
                                             foreach ($allTimeSlots as $id => $name) {
                                                 if (in_array($id, $bookedTimeIds)) {
                                                     $allTimeSlots[$id] = $name . ' (Not Available)'; // Add "Not Available" label
@@ -147,21 +148,32 @@ class AppointmentResource extends Resource
                                 Forms\Components\Select::make('procedures')
                                     ->label('Procedure(s)')
                                     ->multiple() // Allow multiple selection
-                                    // ->relationship('procedures', 'name') // Relating to the procedures table by 'name'
                                     ->reactive() // Make it reactive
                                     ->live() // Make it live-updating
                                     ->options(function (callable $get) {
-                                        // Optionally, you can filter or order the procedures, for example:
-                                        return Procedure::orderBy('name')->pluck('name', 'id'); // Show all procedures in a list, ordered by name
-                                    }),
+                                        // Show all procedures in a list, ordered by name
+                                        return Procedure::orderBy('name')->pluck('name', 'id');
+                                    })
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        // Calculate the total amount based on the selected procedures
+                                        if ($state) {
+                                            // Get the price of the selected procedures
+                                            $totalAmount = Procedure::whereIn('id', $state)->sum('cost');
+                                            // Set the total amount in the 'amount' field
+                                            $set('amount', $totalAmount);
+                                        } else {
+                                            // If no procedures are selected, set amount to 0
+                                            $set('amount', 0);
+                                        }
+                                    })
+                                    ->required(),
 
                                 // Amount with notice message
-                                Forms\Components\Hidden::make('amount')
+                                Forms\Components\TextInput::make('amount')
+                                    ->disabled(true)
+                                    ->dehydrated(true)
+                                    ->helperText('Price may vary')
                                     ->live(),
-                                // Forms\Components\Text::make('amount')
-                                //     ->label('Amount')
-                                //     ->helperText('Price may vary')
-                                //     ->required(),
 
                                 $user->role == 'ADMIN'
                                     ? Forms\Components\Select::make('status')
@@ -184,12 +196,6 @@ class AppointmentResource extends Resource
                                     ->live()
                                     ->hiddenOn('create'), // Visible only on create
 
-                                // No-show Checkbox for Confirmed Status
-                                // Forms\Components\Checkbox::make('no_show')
-                                //     ->label('No Show')
-                                //     ->required(fn($get) => $get('status') === 'CONFIRMED')
-                                //     ->hidden(fn($get) => $get('status') !== 'CONFIRMED'),
-
                                 // Agreement Checkbox for Patients
                                 $user->role == 'PATIENT' ?
                                     Forms\Components\Checkbox::make('agreement')
@@ -209,6 +215,22 @@ class AppointmentResource extends Resource
                                     ->visible(fn($get) => $get('status') === 'CANCELLED')
                                     ->required(fn($record, $get) => $get('status') === 'CANCELLED')
                                     ->columnSpanFull(),
+
+                                // No-show Checkbox for Confirmed Status
+                                Forms\Components\Checkbox::make('no_show')
+                                    ->label('No Show')
+                                    ->hidden(fn($get) => $get('status') !== 'CONFIRMED'),
+
+                                // // Checkbox for 'agreement_accepted'
+                                // Forms\Components\Checkbox::make('agreement_accepted')
+                                //     ->label('Agreement Accepted')
+                                //     ->default(true), // Default value
+
+                                // Checkbox for 'archived'
+                                // Forms\Components\Checkbox::make('archived')
+                                //     ->label('Archived')
+                                //     ->default(false) // Default value
+                                    // ->hidden(true),
                             ]),
                     ])
             ]);
@@ -266,8 +288,8 @@ class AppointmentResource extends Resource
                     ->label('Procedures')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('procedure.cost')
-                    ->label("Cost")
+                Tables\Columns\TextColumn::make('amount')
+                    ->label("Amount")
                     ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->searchable()
                     ->sortable(),
@@ -304,13 +326,31 @@ class AppointmentResource extends Resource
                 // AppointmentStatusFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('')
+                    ->icon('heroicon-o-eye')
+                    ->tooltip('View Appointment'),
+                Tables\Actions\EditAction::make()
+                    ->label('')
+                    ->icon('heroicon-o-pencil')
+                    ->tooltip('Edit Appointment'),
                 Tables\Actions\Action::make('download')
-                    ->label('Invoice')
+                    ->label('')
                     ->url(fn(Appointment $record) => route('appointments.download-pdf', $record))
                     ->openUrlInNewTab()
-                    ->icon('heroicon-o-arrow-down-tray'),
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->tooltip('Download PDF'),
+                Tables\Actions\Action::make('archived')
+                    ->label('') // Set label for the action button
+                    ->icon('heroicon-o-archive-box') // Optional: icon for the action
+                    ->requiresConfirmation()
+                    ->color('danger')
+                    ->action(function (Appointment $record) {
+                        $record->update(['archived' => true]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirm Archive')
+                    ->tooltip('Archived'),
             ])
             ->defaultSort('id', 'desc')
             ->bulkActions([

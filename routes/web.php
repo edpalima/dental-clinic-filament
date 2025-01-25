@@ -24,7 +24,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/patient-registration', function () {
     return view('patient-registration.index');
-})->name('register');;
+})->name('register');
 
 Route::get('/consent-agreement', function () {
     return view('privacy-policy.index');
