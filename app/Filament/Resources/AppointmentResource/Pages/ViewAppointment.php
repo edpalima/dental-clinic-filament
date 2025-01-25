@@ -14,10 +14,15 @@ class ViewAppointment extends ViewRecord
     {
         return [
             Actions\Action::make('back')
-                ->label('Back')
-                ->url(route('filament.admin.resources.appointments.index')) // Redirect to the appointments index page
-                ->icon('heroicon-o-arrow-left'), // Optional: Add an icon
-            Actions\EditAction::make(),
+                ->label('Calendar')
+                ->url(route('filament.admin.pages.calendar')) // Redirect to the appointments index page
+                ->icon('heroicon-o-calendar'), // Optional: Add an icon
+                Actions\Action::make('back')
+                    ->label('Table')
+                    ->url(route('filament.admin.resources.appointments.index')) // Redirect to the appointments index page
+                    ->icon('heroicon-o-list-bullet'), // Optional: Add an icon
+            Actions\EditAction::make()
+                ->color('danger'),
         ];
     }
 }

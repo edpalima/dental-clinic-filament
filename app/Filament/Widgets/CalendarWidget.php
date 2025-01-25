@@ -277,4 +277,9 @@ class CalendarWidget extends FullCalendarWidget
             Actions\DeleteAction::make(),
         ];
     }
+
+    public static function canView(): bool
+    {
+        return false;
+    }
 }

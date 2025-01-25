@@ -35,12 +35,12 @@ class AdminPanelProvider extends PanelProvider
             ->emailVerification()
             ->profile()
             ->colors([
-                // 'danger' => Color::Red,
-                // 'gray' => Color::Slate,
-                // 'info' => Color::Blue,
+                'danger' => Color::Red,
+                'gray' => Color::Slate,
+                'info' => Color::Blue,
                 'primary' => '#061c34',
-                // 'success' => Color::Emerald,
-                // 'warning' => Color::Orange,
+                'success' => Color::Emerald,
+                'warning' => Color::Orange,
             ])
             ->font('Poppins')
             // ->sidebarCollapsibleOnDesktop()

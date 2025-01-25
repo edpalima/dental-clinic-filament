@@ -69,7 +69,7 @@ class AppointmentResource extends Resource
                                 Forms\Components\DatePicker::make('date')
                                     ->required()
                                     ->live()
-                                    ->minDate(now()->addDay()) // Ensure booking starts from tomorrow
+                                    ->minDate(today()->addDay()) // Ensure booking starts from tomorrow
                                     ->default($selectedDate) // Set the default date if available in the query
                                     ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null)),
 
