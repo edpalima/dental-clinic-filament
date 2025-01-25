@@ -19,7 +19,7 @@ class RejectedAppointments extends Page implements Tables\Contracts\HasTable
 
     public function getTableQuery(): Builder
     {
-        return Appointment::query()->rejected();
+        return Appointment::query()->rejected()->orderBy('id', 'desc');
     }
 
     public static function getNavigationBadge(): ?string

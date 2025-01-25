@@ -16,20 +16,22 @@ class AppointmentsController extends Controller
             ->when($request->has('status') && $request->status, function ($query) use ($request) {
                 return $query->where('status', $request->status);
             })
-            ->get()
+            ->with('time') // Include related Time model
+            ->join('times', 'appointments.time_id', '=', 'times.id') // Join with times table
+            ->orderBy('appointments.date') // Sort by date
+            ->orderBy('times.time_start') // Sort by time_start in times table
+            ->get(['appointments.*', 'times.time_start']) // Select needed columns
             ->map(function (Appointment $appointment) {
                 return [
                     'id'     => $appointment->id,
                     'title'  => $appointment->patient->fullName,
                     'time'   => \Carbon\Carbon::parse($appointment->time->time_start)->format('g:i A'),
+                    'time_id'   => $appointment->time->time_id,
                     'start'  => $appointment->date,
                     'status' => $appointment->status,
-                    'time_id' => $appointment->time->id,
                     'end'    => $appointment->date, // Update if appointments have an end time
                 ];
             })
-            ->sortBy('time_id') // Sort appointments by 'time'
-            ->values() // Reset the array keys
             ->toArray();
 
         return response()->json($appointments);

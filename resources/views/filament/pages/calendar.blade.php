@@ -94,6 +94,14 @@
                         })
                         .then((response) => response.json())
                         .then((data) => {
+                            data.sort((a, b) => {
+                                const dateA = new Date(`${a.start}T${a.time}`);
+                                const dateB = new Date(`${b.start}T${b.time}`);
+                                return dateA - dateB; // Ascending order
+                            });
+
+                            console.log('Sorted Events:', data);
+
                             // Map and style events based on status
                             const styledEvents = data.map((event) => {
                                 let bgColor;
@@ -115,9 +123,8 @@
                                         break;
                                 }
 
-                                console.log(event.title);
-                                // Add time to title if available
-                                const time = event.time ? ` ${event.time} - ` : '';
+                                // Add time to title for better clarity
+                                const time = event.time ? `${event.time} - ` : '';
                                 return {
                                     ...event,
                                     title: `${time}${event.title}`,
@@ -127,6 +134,7 @@
                                 };
                             });
 
+                            // Call success callback with the styled events
                             successCallback(styledEvents);
                         })
                         .catch((error) => failureCallback(error));
@@ -141,20 +149,15 @@
                         center: 'title',
                         right: 'dayGridMonth,timeGridWeek,timeGridDay',
                     },
-                    events: fetchEvents,
+                    events: fetchEvents, // Events fetched via the `fetchEvents` function
                     eventClick: function(info) {
                         window.location.href =
                             '{{ route('filament.admin.resources.appointments.view', ['record' => '__appointmentId__']) }}'
-                            .replace(
-                                '__appointmentId__',
-                                info.event.id
-                            );
+                            .replace('__appointmentId__', info.event.id);
                     },
                     dateClick: function(info) {
                         const selectedDate = info.dateStr;
                         const today = new Date().toISOString().split('T')[0];
-
-                        // Allow clicking only on future dates
                         if (selectedDate >= today) {
                             window.location.href =
                                 '{{ route('filament.admin.resources.appointments.create') }}' +
@@ -162,16 +165,17 @@
                                 selectedDate;
                         }
                     },
+                    eventOrder: "-time_id", // Sort events by start date
                     validRange: {
-                        start: '2020-01-01', // Show past dates, adjust this if necessary
-                        end: '2099-12-31' // Show future dates
+                        start: '2020-01-01',
+                        end: '2099-12-31',
                     },
 
                     // Use 'datesRender' to apply inactive styles for past/present dates
                     datesRender: function() {
                         const today = new Date().toISOString().split('T')[0];
                         const specificDate =
-                        '2025-01-25'; // Replace with your desired specific date (e.g., '2025-01-25')
+                            '2025-01-25'; // Replace with your desired specific date (e.g., '2025-01-25')
 
                         // Loop through all cells and add classes for past, present, and specific dates
                         const allCells = document.querySelectorAll('.fc-daygrid-day-frame');
@@ -186,7 +190,7 @@
                             // Set color for specific date
                             if (cellDate === specificDate) {
                                 cell.classList.add(
-                                'specific-date'); // Add class for the specific date
+                                    'specific-date'); // Add class for the specific date
                             }
                         });
                     },

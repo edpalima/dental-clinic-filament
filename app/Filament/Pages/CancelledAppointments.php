@@ -19,7 +19,7 @@ class CancelledAppointments extends Page implements Tables\Contracts\HasTable
 
     public function getTableQuery(): Builder
     {
-        return Appointment::query()->cancelled();
+        return Appointment::query()->cancelled()->orderBy('id', 'desc');
     }
 
     public static function getNavigationBadge(): ?string

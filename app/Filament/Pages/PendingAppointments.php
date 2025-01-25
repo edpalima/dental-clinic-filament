@@ -19,7 +19,7 @@ class PendingAppointments extends Page implements Tables\Contracts\HasTable
 
     public function getTableQuery(): Builder
     {
-        return Appointment::query()->pending();
+        return Appointment::query()->pending()->orderBy('id', 'desc');
     }
 
     public static function getNavigationBadge(): ?string

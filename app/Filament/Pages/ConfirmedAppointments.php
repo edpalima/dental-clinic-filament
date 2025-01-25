@@ -19,7 +19,7 @@ class ConfirmedAppointments extends Page implements Tables\Contracts\HasTable
 
     public function getTableQuery(): Builder
     {
-        return Appointment::query()->confirmed();
+        return Appointment::query()->confirmed()->orderBy('id', 'desc');
     }
 
     public static function getNavigationBadge(): ?string

@@ -261,6 +261,7 @@ class AppointmentResource extends Resource
                     ->openUrlInNewTab()
                     ->icon('heroicon-o-arrow-down-tray'),
             ])
+            ->defaultSort('id', 'desc')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     ExportBulkAction::make(),
