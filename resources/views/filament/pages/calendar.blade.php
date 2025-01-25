@@ -158,11 +158,13 @@
                     dateClick: function(info) {
                         const selectedDate = info.dateStr;
                         const today = new Date().toISOString().split('T')[0];
-                        if (selectedDate >= today) {
+                        if (selectedDate > today) {
                             window.location.href =
                                 '{{ route('filament.admin.resources.appointments.create') }}' +
                                 '?date=' +
                                 selectedDate;
+                        } else {
+                            alert('Please select a future date to create an appointment.');
                         }
                     },
                     eventOrder: "-time_id", // Sort events by start date
@@ -175,7 +177,7 @@
                     datesRender: function() {
                         const today = new Date().toISOString().split('T')[0];
                         const specificDate =
-                            '2025-01-25'; // Replace with your desired specific date (e.g., '2025-01-25')
+                            '2025-01-24'; // Replace with your desired specific date (e.g., '2025-01-25')
 
                         // Loop through all cells and add classes for past, present, and specific dates
                         const allCells = document.querySelectorAll('.fc-daygrid-day-frame');
