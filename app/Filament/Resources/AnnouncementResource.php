@@ -43,7 +43,7 @@ class AnnouncementResource extends Resource
                 Forms\Components\FileUpload::make('image_path')
                     ->label('Image')
                     ->image()
-                    ->maxSize(1024) // Limit size to 1MB
+                    ->maxSize(5000) // Limit size to 5MB
                     ->directory('announcements')
                     ->required()
                     ->columnSpanFull(),

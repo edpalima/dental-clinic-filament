@@ -76,10 +76,10 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="gender">Gender</label>
+                                <label for="gender">Sex</label>
                                 <select class="form-control @error('gender') is-invalid @enderror" id="gender"
                                     wire:model="gender">
-                                    <option value="">Select Gender</option>
+                                    <option value="">Select Sex</option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                 </select>

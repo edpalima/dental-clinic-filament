@@ -69,11 +69,11 @@ class MyProfile extends Page implements HasForms
                         ->maxLength(255)
                         ->required(),
                     Forms\Components\Select::make('gender')
+                        ->label('Sex')
                         ->options([
                             'male' => 'Male',
                             'female' => 'Female',
                         ])
-                        ->label('Gender')
                         ->required(),
                     Forms\Components\TextInput::make('occupation')
                         ->maxLength(255)

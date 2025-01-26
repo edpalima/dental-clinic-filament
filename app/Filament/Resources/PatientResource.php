@@ -63,7 +63,7 @@ class PatientResource extends Resource
                             'male' => 'Male',
                             'female' => 'Female',
                         ])
-                        ->label('Gender')
+                        ->label('Sex')
                         ->required(),
                     Forms\Components\TextInput::make('occupation')
                         ->maxLength(255)
