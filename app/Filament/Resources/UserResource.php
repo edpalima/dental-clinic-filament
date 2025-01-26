@@ -52,9 +52,9 @@ class UserResource extends Resource
                     // Forms\Components\DateTimePicker::make('email_verified_at'),
                     TextInput::make('password')
                         ->password()
-                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                        // ->dehydrated(fn ($state) => !empty($state))
-                        ->visible(fn($livewire) => $livewire instanceof CreateUser)
+                        ->dehydrateStateUsing(fn($state) => !empty($state) ? Hash::make($state) : null) // Only hash if there's a value
+                        ->dehydrated(fn($state) => !empty($state)) // Ignore the field if it's empty
+                        ->visible(fn($livewire) => $livewire instanceof CreateUser) // Show only on create
                         ->rule(Password::default())
                         ->maxLength(255),
                     TextInput::make('role')
@@ -67,13 +67,14 @@ class UserResource extends Resource
                     TextInput::make('new_password')
                         ->nullable()
                         ->password()
-                        ->rule(Password::default()),
-
+                        ->dehydrateStateUsing(fn($state) => !empty($state) ? Hash::make($state) : null) // Only hash if there's a value
+                        ->dehydrated(fn($state) => !empty($state)), // Ignore the field if it's empty
+                
                     TextInput::make('new_password_confirmation')
                         ->password()
                         ->same('new_password')
                         ->requiredWith('new_password'),
-                ])->visible(fn($livewire) => $livewire instanceof EditUser),
+                ])->visible(fn($livewire) => $livewire instanceof EditUser);
             ]);
     }
 
