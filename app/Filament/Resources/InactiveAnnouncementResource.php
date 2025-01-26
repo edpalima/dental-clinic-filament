@@ -21,8 +21,8 @@ class InactiveAnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;
     protected static ?string $navigationIcon = 'heroicon-o-x-mark';
-    protected static ?string $slug = 'announcements/inactive';
-    protected static ?string $navigationLabel = 'Inactive';
+    protected static ?string $slug = 'announcements/archived';
+    protected static ?string $navigationLabel = 'Archived';
     protected static ?string $navigationGroup = 'Announcements';
 
     public static function form(Form $form): Form

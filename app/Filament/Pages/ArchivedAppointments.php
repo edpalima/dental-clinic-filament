@@ -19,12 +19,15 @@ class ArchivedAppointments extends Page implements Tables\Contracts\HasTable
 
     public function getTableQuery(): Builder
     {
-        return Appointment::query()->withoutGlobalScope('userRoleFilter')->orderBy('id', 'desc');
+        return Appointment::query()->withoutGlobalScope('userRoleFilter')
+            ->where('archived', true)
+            ->orderBy('id', 'desc');
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return Appointment::query()->withoutGlobalScope('userRoleFilter')->count();
+        return Appointment::query()->withoutGlobalScope('userRoleFilter')
+            ->where('archived', true)->count();
     }
 
     public static function getNavigationBadgeColor(): string|array|null
@@ -71,9 +74,9 @@ class ArchivedAppointments extends Page implements Tables\Contracts\HasTable
             Tables\Columns\TextColumn::make('date')
                 ->date()
                 ->sortable(),
-                Tables\Columns\TextColumn::make('time.time_start')
-                    ->label('Time')
-                    ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('h:i A')),
+            Tables\Columns\TextColumn::make('time.time_start')
+                ->label('Time')
+                ->formatStateUsing(fn($state) => \Carbon\Carbon::parse($state)->format('h:i A')),
             Tables\Columns\TextColumn::make('status')
                 ->sortable()
                 ->searchable()
@@ -96,20 +99,21 @@ class ArchivedAppointments extends Page implements Tables\Contracts\HasTable
             // Add other columns as needed
         ];
     }
-protected function getTableActions(): array
-{
-    return [
-        Tables\Actions\Action::make('Unarchived')
-            ->label('') // Set label for the action button
-            ->icon('heroicon-o-archive-box-x-mark') // Optional: icon for the action
-            ->requiresConfirmation()
-            ->color('success')
-            ->action(function (Appointment $record) {
-                $record->update(['archived' => false]);
-            })
-            ->requiresConfirmation()
-            ->modalHeading('Confirm Unarchive')
-            ->tooltip('Unarchive'),
-    ];
-}
+
+    protected function getTableActions(): array
+    {
+        return [
+            Tables\Actions\Action::make('archived')
+                ->label('') // Set label for the action button
+                ->icon('heroicon-o-archive-box-x-mark') // Optional: icon for the action
+                ->requiresConfirmation()
+                ->color('success')
+                ->action(function (Appointment $record) {
+                    $record->update(['archived' => false]);
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Confirm Unarchive')
+                ->tooltip('Unarchive'),
+        ];
+    }
 }

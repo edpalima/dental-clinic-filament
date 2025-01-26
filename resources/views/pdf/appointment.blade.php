@@ -251,9 +251,9 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td>{{ $appointment->procedure->name }}</td>
-                <td class="right">P{{ number_format($appointment->procedure->cost, 2) }}</td>
-                <td class="bold">P{{ number_format($appointment->procedure->cost, 2) }}</td>
+                {{-- <td>{{ $appointment->procedure->name }}</td> --}}
+                {{-- <td class="right">P{{ number_format($appointment->procedure->cost, 2) }}</td> --}}
+                {{-- <td class="bold">P{{ number_format($appointment->procedure->cost, 2) }}</td> --}}
             </tr>
         </tbody>
     </table>
@@ -286,7 +286,7 @@
                 </td>
                 <td class="large">
                     {{ \Carbon\Carbon::parse($appointment->date)->addDays(30)->translatedFormat('F j, Y') }}</td>
-                <td class="large total">P{{ number_format($appointment->procedure->cost, 2) }}</td>
+                {{-- <td class="large total">P{{ number_format($appointment->procedure->cost, 2) }}</td> --}}
             </tr>
         </tbody>
     </table>

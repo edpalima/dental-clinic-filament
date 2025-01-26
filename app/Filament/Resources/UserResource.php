@@ -32,6 +32,13 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Section::make('User Details')->schema([
+                    Forms\Components\FileUpload::make('photo')
+                        ->image()
+                        ->directory('user-photos')
+                        ->maxSize(1024)
+                        ->label('Photo')
+                        ->nullable()
+                        ->columnSpanFull(),
                     TextInput::make('name')
                         ->required()
                         ->maxLength(255),
@@ -45,9 +52,9 @@ class UserResource extends Resource
                     // Forms\Components\DateTimePicker::make('email_verified_at'),
                     TextInput::make('password')
                         ->password()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
                         // ->dehydrated(fn ($state) => !empty($state))
-                        ->visible(fn ($livewire) => $livewire instanceof CreateUser)
+                        ->visible(fn($livewire) => $livewire instanceof CreateUser)
                         ->rule(Password::default())
                         ->maxLength(255),
                     TextInput::make('role')
@@ -66,7 +73,7 @@ class UserResource extends Resource
                         ->password()
                         ->same('new_password')
                         ->requiredWith('new_password'),
-                ])->visible(fn ($livewire) => $livewire instanceof EditUser),
+                ])->visible(fn($livewire) => $livewire instanceof EditUser),
             ]);
     }
 

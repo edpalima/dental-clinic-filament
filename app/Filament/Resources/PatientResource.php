@@ -33,6 +33,13 @@ class PatientResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Personal Information')->schema([
+                    // Forms\Components\FileUpload::make('photo')
+                    //     ->image() // Accept only images
+                    //     ->directory('patient-photos') // Directory to store the uploaded photos
+                    //     ->maxSize(1024) // Max size in KB (1MB here)
+                    //     ->label('Photo')
+                    //     ->nullable()
+                    //     ->columnSpanFull(),
                     Forms\Components\TextInput::make('first_name')
                         ->required()
                         ->maxLength(255),
@@ -84,8 +91,8 @@ class PatientResource extends Resource
                         ->maxLength(255),
                     Forms\Components\TextInput::make('password')
                         ->password()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                        ->visible(fn ($livewire) => $livewire instanceof CreatePatient)
+                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                        ->visible(fn($livewire) => $livewire instanceof CreatePatient)
                         ->rule(Password::default())
                         ->maxLength(255),
                 ])->columns(),
@@ -257,7 +264,7 @@ class PatientResource extends Resource
                 ])->columns(1),
 
                 Forms\Components\Checkbox::make('check_consent')
-                    ->label(fn () => new HtmlString('I accept the <a href="/consent-agreement" target="_blank" style="color: red">Consents Agreement</a>'))
+                    ->label(fn() => new HtmlString('I accept the <a href="/consent-agreement" target="_blank" style="color: red">Consents Agreement</a>'))
                     ->accepted()
                     ->validationMessages([
                         'accepted' => 'You must accept the Consents Agreement.',

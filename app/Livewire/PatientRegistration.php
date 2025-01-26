@@ -6,8 +6,10 @@ use App\Models\Patient;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Str;
 
 class PatientRegistration extends Component
 {
@@ -185,11 +187,12 @@ class PatientRegistration extends Component
 
         try {
             if ($patient->save()) {
-                User::create([
+                $user = User::create([
                     'name' => $this->first_name . ' ' . $this->last_name,
                     'email' => $this->email,
                     'password' => Hash::make($this->password),
                     'role' => User::ROLE_PATIENT,
+                    'remember_token' => Str::random(60),
                 ]);
             }
         } catch (Exception $e) {
@@ -205,7 +208,16 @@ class PatientRegistration extends Component
             ->success()
             ->send();
 
-        return redirect('/admin');
+        // Generate the verification link with the token
+        $verificationLink = route('email.verify', ['token' => $user->remember_token]);
+
+        // Send the email
+        Mail::send('emails.verify-email', ['link' => $verificationLink], function ($message) use ($user) {
+            $message->to($user->email);
+            $message->subject('Email Verification');
+        });
+
+        return redirect()->route('email.notice');
     }
 
     public function render()

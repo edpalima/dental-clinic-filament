@@ -196,14 +196,6 @@ class AppointmentResource extends Resource
                                     ->live()
                                     ->hiddenOn('create'), // Visible only on create
 
-                                // Agreement Checkbox for Patients
-                                $user->role == 'PATIENT' ?
-                                    Forms\Components\Checkbox::make('agreement')
-                                    ->label('I agree to the terms and conditions')
-                                    ->required()
-                                    ->helperText('Please agree before proceeding.')
-                                    : Forms\Components\Hidden::make('agreement'),
-
                                 Forms\Components\Textarea::make('notes')
                                     ->columnSpanFull(),
 
@@ -219,8 +211,14 @@ class AppointmentResource extends Resource
                                 // No-show Checkbox for Confirmed Status
                                 Forms\Components\Checkbox::make('no_show')
                                     ->label('No Show')
-                                    ->hidden(fn($get) => $get('status') !== 'CONFIRMED'),
+                                    ->hidden(fn($get) => $get('status') !== 'CONFIRMED')
+                                    ->columnSpanFull(),
 
+                                Forms\Components\Checkbox::make('agreement_accepted')
+                                    ->label('I agree to the terms and conditions')
+                                    ->required()
+                                    ->disabled(fn($get) => $get('id') !== null) // Disable if editing
+                                    ->columnSpanFull(),
                                 // // Checkbox for 'agreement_accepted'
                                 // Forms\Components\Checkbox::make('agreement_accepted')
                                 //     ->label('Agreement Accepted')
@@ -230,7 +228,7 @@ class AppointmentResource extends Resource
                                 // Forms\Components\Checkbox::make('archived')
                                 //     ->label('Archived')
                                 //     ->default(false) // Default value
-                                    // ->hidden(true),
+                                // ->hidden(true),
                             ]),
                     ])
             ]);

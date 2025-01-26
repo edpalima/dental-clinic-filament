@@ -4,6 +4,9 @@ use App\Http\Controllers\AppointmentsController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\EmailVerificationController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,8 +38,12 @@ Route::get(
     [PDFController::class, 'downloadPDF']
 )->name('appointments.download-pdf');
 
-use App\Http\Controllers\ReportController;
-
 Route::get('/appointment-reports/pdf', [ReportController::class, 'generateAppointmentReportPdf'])->name('appointment-reports.pdf');
 
 Route::post('/appointments/fetch', [AppointmentsController::class, 'fetch'])->name('appointments.fetch');
+
+Route::get('/email/verify/{token}', [EmailVerificationController::class, 'verify'])->name('email.verify');
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->name('email.notice');

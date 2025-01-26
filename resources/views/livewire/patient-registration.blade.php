@@ -1,7 +1,8 @@
 <div>
     <div class="container mt-2">
         <div class="text-center mb-1">
-            <p>Sign up to schedule your appointment or <a class="text-success" href="/admin/login">log in</a> to manage your existing appointments</p>
+            <p>Sign up to schedule your appointment or <a class="text-success" href="/admin/login">log in</a> to manage
+                your existing appointments</p>
         </div>
         <div class="card">
             <div class="card-header">
@@ -580,7 +581,8 @@
                                 @enderror
                             </div>
                             <div class="form-group mb-3">
-                                <label class="mb-2" for="check_illness">13. Do you have or have you had any of the following? Check
+                                <label class="mb-2" for="check_illness">13. Do you have or have you had any of the
+                                    following? Check
                                     which apply</label>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -929,7 +931,12 @@
                     </div>
 
                     <div class="form-group text-end">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                            <div wire:loading>
+                                <span class="spinner-border spinner-border-sm" role="output"
+                                    aria-hidden="true"></span>
+                            </div>&nbsp; Submit
+                        </button>
                     </div>
                 </form>
             </div>
