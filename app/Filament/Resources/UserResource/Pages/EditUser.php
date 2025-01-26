@@ -21,9 +21,13 @@ class EditUser extends EditRecord
 
     public function mutateFormDataBeforeSave(array $data): array
     {
-        if (array_key_exists('new_password', $data) || filled($data['new_password'])) {
-            $this->record->password = Hash::make($data['new_password']);
+        // Check if a new password is provided
+        if (!empty($data['new_password'])) {
+            $data['password'] = $data['new_password']; // Use the new password
         }
+
+        unset($data['new_password']); // Remove new_password to avoid errors
+        unset($data['new_password_confirmation']); // Remove confirmation field
 
         return $data;
     }
