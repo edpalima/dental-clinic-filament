@@ -6,6 +6,7 @@ use App\Http\Controllers\PDFController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 
 /*
@@ -47,3 +48,5 @@ Route::get('/email/verify/{token}', [EmailVerificationController::class, 'verify
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->name('email.notice');
+
+Route::get('/auth/logout', [UserController::class, 'logout'])->name('filament.admin.auth.logout');
