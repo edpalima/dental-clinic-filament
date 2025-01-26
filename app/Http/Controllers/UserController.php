@@ -14,6 +14,6 @@ class UserController extends FilamentLogoutController
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('filament.admin.auth.login');
     }
 }

@@ -49,4 +49,4 @@ Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->name('email.notice');
 
-Route::get('/auth/logout', [UserController::class, 'logout'])->name('filament.admin.auth.logout');
+Route::get('/admin/logout', [UserController::class, 'logout'])->name('filament.admin.auth.logout.new');
