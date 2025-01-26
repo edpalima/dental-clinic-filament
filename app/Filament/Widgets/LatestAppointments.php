@@ -29,14 +29,22 @@ class LatestAppointments extends BaseWidget
                             $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
                         });
                     })
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $query->orWhereHas('patient', function (Builder $query) use ($direction) {
+                            $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('doctor.fullname')
                     ->searchable(query: function (Builder $query, string $search) {
                         $query->orWhereHas('doctor', function (Builder $query) use ($search) {
                             $query->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
                         });
                     })
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $query->orWhereHas('doctor', function (Builder $query) use ($direction) {
+                            $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('procedures')
                     ->getStateUsing(function ($record) {
                         if (is_array($record->procedures)) {
