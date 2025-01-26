@@ -69,12 +69,12 @@ class UserResource extends Resource
                         ->password()
                         ->dehydrateStateUsing(fn($state) => !empty($state) ? Hash::make($state) : null) // Only hash if there's a value
                         ->dehydrated(fn($state) => !empty($state)), // Ignore the field if it's empty
-                
+
                     TextInput::make('new_password_confirmation')
                         ->password()
                         ->same('new_password')
                         ->requiredWith('new_password'),
-                ])->visible(fn($livewire) => $livewire instanceof EditUser);
+                ])->visible(fn($livewire) => $livewire instanceof EditUser)
             ]);
     }
 
