@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Resources\AppointmentResource;
+use App\Models\Procedure;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -36,11 +37,26 @@ class LatestAppointments extends BaseWidget
                         });
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('procedure.name')
+                Tables\Columns\TextColumn::make('procedures')
+                    ->getStateUsing(function ($record) {
+                        if (is_array($record->procedures)) {
+                            // Get procedure names and join them with a comma
+                            $procedureNames = Procedure::whereIn('id', $record->procedures)->pluck('name')->toArray();
+                            $namesString = implode(', ', $procedureNames);
+
+                            // Truncate to 20 characters
+                            return strlen($namesString) > 15 ? substr($namesString, 0, 15) . '...' : $namesString;
+                        }
+                        return '';
+                    })
+                    ->label('Procedures')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('procedure.cost')
-                    ->label("Cost")
+                Tables\Columns\TextColumn::make('amount')
+                    ->label("Amount")
+                    ->formatStateUsing(fn($state) => number_format($state, 2))
+                    ->searchable()
+                    ->sortable()
                     ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->searchable()
                     ->sortable(),
@@ -50,7 +66,7 @@ class LatestAppointments extends BaseWidget
                 Tables\Columns\TextColumn::make('time.name'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'PENDING' => 'gray',
                         'CANCELLED' => 'warning',
                         'CONFIRMED' => 'info',

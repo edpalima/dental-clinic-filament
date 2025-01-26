@@ -35,9 +35,9 @@ class CompletedAppointments extends Page implements Tables\Contracts\HasTable
     protected function getTableColumns(): array
     {
         return [
-            Tables\Columns\TextColumn::make('id')
-                ->searchable()
-                ->sortable(),
+            // Tables\Columns\TextColumn::make('id')
+            //     ->searchable()
+            //     ->sortable(),
             Tables\Columns\TextColumn::make('patient.fullname')
                 ->searchable(query: function (Builder $query, string $search) {
                     $query->orWhereHas('patient', function (Builder $query) use ($search) {
