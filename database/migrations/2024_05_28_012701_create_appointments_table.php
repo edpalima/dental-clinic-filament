@@ -16,12 +16,13 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
             $table->text('procedures')->nullable();
+            $table->json('procedures_data')->nullable();
             $table->foreignId('time_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->text('notes')->nullable();
             $table->text('cancelled_reason')->nullable();
             $table->string('payment_options')->nullable();
-            $table->string('amount')->nullable();
+            $table->string('total_amount')->nullable();
             $table->string('account_number')->nullable();
             $table->string('reference_number')->nullable();
             $table->string('status')->nullable()->default('PENDING');

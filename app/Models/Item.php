@@ -11,6 +11,7 @@ class Item extends Model
         'appointment_id',
         'tooth_number',
         'procedure_id',
+        'amount',
         'notes'
     ];
 

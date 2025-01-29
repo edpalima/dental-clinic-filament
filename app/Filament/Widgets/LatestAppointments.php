@@ -60,7 +60,7 @@ class LatestAppointments extends BaseWidget
                     ->label('Procedures')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('amount')
+                Tables\Columns\TextColumn::make('total_amount')
                     ->label("Amount")
                     ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->searchable()

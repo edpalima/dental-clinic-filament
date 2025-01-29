@@ -21,7 +21,7 @@ class Appointment extends Model
         'notes',
         'cancelled_reason',
         'payment_options',
-        'amount',
+        'total_amount',
         'account_number',
         'reference_number',
         'status',
@@ -33,6 +33,7 @@ class Appointment extends Model
 
     protected $casts = [
         'procedures' => 'array',
+        'procedures_data' => 'array',
     ];
 
     public function patient()

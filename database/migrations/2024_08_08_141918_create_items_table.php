@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('appointment_id');
             $table->integer('tooth_number'); // Changed from `tooth_number_id`
             $table->unsignedBigInteger('procedure_id');
+            $table->string('amount')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
 

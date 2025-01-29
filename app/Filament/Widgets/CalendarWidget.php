@@ -179,8 +179,8 @@ class CalendarWidget extends FullCalendarWidget
                             Forms\Components\Select::make('procedure_id')
                                 ->relationship(name: 'procedure', titleAttribute: 'name')
                                 ->live()
-                                ->afterStateUpdated(fn($state, callable $set) => $set('amount', Procedure::find($state)?->cost)),
-                            Forms\Components\TextInput::make('amount')
+                                ->afterStateUpdated(fn($state, callable $set) => $set('total_amount', Procedure::find($state)?->cost)),
+                            Forms\Components\TextInput::make('total_amount')
                                 ->live(),
 
                             Forms\Components\Textarea::make('notes')

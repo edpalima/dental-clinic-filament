@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Filament\Support\Enums\Alignment;
 use Illuminate\Support\HtmlString;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -70,7 +71,7 @@ class AppointmentResource extends Resource
                                 Forms\Components\DatePicker::make('date')
                                     ->required()
                                     ->live()
-                                    ->minDate(today()->addDay()) // Ensure booking starts from tomorrow
+                                    ->minDate(fn($get) => $get('id') === null ? today()->addDay() : null) // Ensure booking starts from tomorrow only on create forms
                                     ->default($selectedDate) // Set the default date if available in the query
                                     ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null))
                                     ->disabled(fn($get) => $get('id') !== null), // Disable if editing
@@ -148,32 +149,11 @@ class AppointmentResource extends Resource
                                 Forms\Components\Select::make('procedures')
                                     ->label('Procedure(s)')
                                     ->multiple() // Allow multiple selection
-                                    ->reactive() // Make it reactive
-                                    ->live() // Make it live-updating
-                                    ->options(function (callable $get) {
+                                    ->options(function () {
                                         // Show all procedures in a list, ordered by name
                                         return Procedure::orderBy('name')->pluck('name', 'id');
                                     })
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        // Calculate the total amount based on the selected procedures
-                                        if ($state) {
-                                            // Get the price of the selected procedures
-                                            $totalAmount = Procedure::whereIn('id', $state)->sum('cost');
-                                            // Set the total amount in the 'amount' field
-                                            $set('amount', $totalAmount);
-                                        } else {
-                                            // If no procedures are selected, set amount to 0
-                                            $set('amount', 0);
-                                        }
-                                    })
                                     ->required(),
-
-                                // Amount with notice message
-                                Forms\Components\TextInput::make('amount')
-                                    ->disabled(true)
-                                    ->dehydrated(true)
-                                    ->helperText('Price may vary')
-                                    ->live(),
 
                                 $user->role == 'ADMIN'
                                     ? Forms\Components\Select::make('status')
@@ -214,11 +194,6 @@ class AppointmentResource extends Resource
                                     ->hidden(fn($get) => $get('status') !== 'CONFIRMED')
                                     ->columnSpanFull(),
 
-                                Forms\Components\Checkbox::make('agreement_accepted')
-                                    ->label('I agree to the terms and conditions')
-                                    ->required()
-                                    ->disabled(fn($get) => $get('id') !== null) // Disable if editing
-                                    ->columnSpanFull(),
                                 // // Checkbox for 'agreement_accepted'
                                 // Forms\Components\Checkbox::make('agreement_accepted')
                                 //     ->label('Agreement Accepted')
@@ -230,6 +205,92 @@ class AppointmentResource extends Resource
                                 //     ->default(false) // Default value
                                 // ->hidden(true),
                             ]),
+
+                        Fieldset::make('PROCEDURE DATA')
+                            ->schema([
+                                Forms\Components\Grid::make(2) // Split layout: Left (Repeater), Right (Tooth Chart)
+                                    ->schema([
+
+                                        Forms\Components\Placeholder::make('documentation')
+                                            ->label('Chart')
+                                            ->content(new HtmlString('<img src="/assets/img/tooth-chart.png"/>'))
+                                            ->columnSpan(1), // Span only one column width
+
+                                        Forms\Components\Grid::make(1)
+                                            ->schema([
+                                                Forms\Components\Repeater::make('items')
+                                                    ->label('Procedures / Treatments')
+                                                    ->relationship()
+                                                    ->schema([
+
+                                                        Forms\Components\Select::make('tooth_number')
+                                                            ->label('Tooth Number')
+                                                            ->options(array_merge(range(1, 32), ['None']))
+                                                            ->required()
+                                                            ->placeholder('Select')
+                                                            ->reactive()
+                                                            ->disabled($user->role != 'ADMIN') // Disable for non-admin users
+                                                            ->afterStateUpdated(
+                                                                fn($state, callable $set, callable $get) =>
+                                                                $set('selected_teeth', array_unique(array_merge($get('selected_teeth') ?? [], [$state]))),
+                                                            ),
+
+                                                        Forms\Components\Select::make('procedure_id')
+                                                            ->label('Procedure')
+                                                            ->options(fn() => Procedure::pluck('name', 'id'))
+                                                            ->placeholder('Select')
+                                                            ->required()
+                                                            ->searchable()
+                                                            ->reactive()
+                                                            ->disabled($user->role != 'ADMIN') // Disable for non-admin users
+                                                            ->afterStateUpdated(
+                                                                fn($state, callable $set, callable $get) => [
+                                                                    $set('teeth_colors.' . $get('tooth_number'), $state),
+                                                                    $set('amount', Procedure::where('id', $state)->value('cost'))
+                                                                ]
+                                                            ),
+
+                                                        Forms\Components\TextInput::make('amount')
+                                                            ->label('Amount')
+                                                            ->numeric()
+                                                            ->required()
+                                                            ->prefix('₱')
+                                                            ->reactive()
+                                                            ->disabled($user->role != 'ADMIN') // Disable for non-admin users
+                                                            ->afterStateUpdated(
+                                                                fn($state, callable $set, callable $get) => $set('amount', $state) // Ensure 'amount' state is updated
+                                                            ),
+                                                    ])
+                                                    ->collapsible()
+                                                    ->addActionLabel('Add Procedure')
+                                                    ->defaultItems(0)
+                                                    ->columns(3),
+
+                                                // Total Amount Field
+                                                Forms\Components\TextInput::make('total_amount')
+                                                    ->label('Total Amount')
+                                                    ->disabled(true) // Always disabled since it's calculated
+                                                    ->helperText('Total amount of selected procedures')
+                                                    ->reactive()
+                                                    ->live()
+                                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                        // Sum all amounts in the repeater's 'amount' fields
+                                                        $totalAmount = collect($get('items'))
+                                                            ->sum(fn($item) => $item['amount'] ?? 0); // Sum the 'amount' values for all items in the repeater
+
+                                                        // Set the total amount in the 'total_amount' field
+                                                        $set('total_amount', $totalAmount);
+                                                    }),
+                                            ])
+                                            ->columnSpan(1),
+                                    ]),
+                            ]),
+
+                        Forms\Components\Checkbox::make('agreement_accepted')
+                            ->label('I agree to the terms and conditions')
+                            ->required()
+                            ->disabled(fn($get) => $get('id') !== null) // Disable if editing
+                            ->columnSpanFull(),
                     ])
             ]);
     }
@@ -283,7 +344,7 @@ class AppointmentResource extends Resource
                     ->label('Procedures')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('amount')
+                Tables\Columns\TextColumn::make('total_amount')
                     ->label("Amount")
                     ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->searchable()
@@ -359,7 +420,7 @@ class AppointmentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ItemsRelationManager::class
+            // ItemsRelationManager::class
         ];
     }
 
