@@ -5,10 +5,10 @@
     <section class="breadcrumbs bg-light py-4">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
-                <h2 class="text-dark">Email Verified</h2>
+                <h2 class="text-dark">Email Verification</h2>
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="/" class="text-primary">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Email Verified</li>
+                    <li class="breadcrumb-item active" aria-current="page">Email Verification</li>
                 </ol>
             </div>
         </div>

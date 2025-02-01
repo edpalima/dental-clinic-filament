@@ -12,6 +12,7 @@ use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Procedure;
 use App\Models\Time;
+use App\Models\User;
 use Carbon\Carbon;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Forms;
@@ -57,6 +58,16 @@ class AppointmentResource extends Resource
         }
 
         $user = Auth::user();
+        $defaultStatus = [
+            'PENDING' => 'PENDING',
+            'CANCELLED' => 'CANCELLED',
+        ];
+
+        if ($user->role != User::ROLE_PATIENT || fn($get) => $get('id') !== null ) {
+            $defaultStatus['CONFIRMED'] = 'CONFIRMED';
+            $defaultStatus['REJECTED'] = 'REJECTED';
+            $defaultStatus['COMPLETED'] = 'COMPLETED';
+        }
 
         // Get the selected date from the query parameter
         $selectedDate = request()->query('date'); // Fetch 'selected_date' from URL query parameters
@@ -131,7 +142,7 @@ class AppointmentResource extends Resource
                         // Assign Section
                         Fieldset::make('DETAILS')
                             ->schema([
-                                $user->role == 'ADMIN' ?
+                                $user->role != User::ROLE_PATIENT ?
                                     Forms\Components\Select::make('patient_id')
                                     ->relationship('patient', 'first_name')
                                     ->getOptionLabelFromRecordUsing(fn(Patient $record) => "{$record->first_name} {$record->last_name}")
@@ -155,7 +166,7 @@ class AppointmentResource extends Resource
                                     })
                                     ->required(),
 
-                                $user->role == 'ADMIN'
+                                $user->role != User::ROLE_PATIENT
                                     ? Forms\Components\Select::make('status')
                                     ->options([
                                         'PENDING' => 'PENDING',
@@ -167,10 +178,7 @@ class AppointmentResource extends Resource
                                     ->required()
                                     ->live()
                                     :  Forms\Components\Select::make('status')
-                                    ->options([
-                                        'PENDING' => 'Pending',
-                                        'CANCELLED' => 'Cancelled',
-                                    ])
+                                    ->options($defaultStatus)
                                     ->default('PENDING')
                                     ->required()
                                     ->live()
@@ -284,7 +292,7 @@ class AppointmentResource extends Resource
                                             ])
                                             ->columnSpan(1),
                                     ]),
-                            ]),
+                            ])->hidden($user->role ==  User::ROLE_PATIENT && fn($get) => $get('id') !== null),
 
                         Forms\Components\Checkbox::make('agreement_accepted')
                             ->label('I agree to the terms and conditions')

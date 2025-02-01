@@ -71,15 +71,13 @@ class Dashboard extends Page
 
     public static function canAccess(): bool
     {
-        if (!Auth::user()->isAdmin()) {
-            redirect('admin/appointments');
-        }
-
         return true;
     }
 
     public static function canView(): bool
     {
+        
+        return true;
         if (Auth::user()->is_admin) {
             return true;
         }
@@ -89,6 +87,7 @@ class Dashboard extends Page
 
     public static function shouldRegisterNavigation(): bool
     {
+        return true;
         return Auth::user()->role === User::ROLE_ADMIN;
     }
 }

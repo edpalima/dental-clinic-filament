@@ -42,7 +42,7 @@ class PatientsChart extends ChartWidget
 
     public static function canView(): bool
     {
-        if (Auth::user()->isAdmin()) {
+        if (Auth::user()->isAdmin() || Auth::user()->isDoctor()) {
             return true;
         }
 

@@ -36,6 +36,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         return $this->role === self::ROLE_ADMIN;
     }
 
+    public function isDoctor()
+    {
+        return $this->role === self::ROLE_DOCTOR;
+    }
+
     public function isPatient()
     {
         return $this->role === self::ROLE_PATIENT;

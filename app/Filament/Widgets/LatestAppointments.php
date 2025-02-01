@@ -14,6 +14,9 @@ class LatestAppointments extends BaseWidget
 {
     protected static ?int $sort = 4;
     protected int | string | array $columnSpan = 'full';
+
+    protected static ?string $heading = 'Appointments';
+
     public function table(Table $table): Table
     {
         return $table
@@ -94,10 +97,6 @@ class LatestAppointments extends BaseWidget
 
     public static function canView(): bool
     {
-        if (Auth::user()->isAdmin()) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 }
