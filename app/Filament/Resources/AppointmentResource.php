@@ -63,7 +63,7 @@ class AppointmentResource extends Resource
             'CANCELLED' => 'CANCELLED',
         ];
 
-        if ($user->role != User::ROLE_PATIENT || fn($get) => $get('id') !== null ) {
+        if ($user->role != User::ROLE_PATIENT || fn($get) => $get('id') !== null) {
             $defaultStatus['CONFIRMED'] = 'CONFIRMED';
             $defaultStatus['REJECTED'] = 'REJECTED';
             $defaultStatus['COMPLETED'] = 'COMPLETED';
@@ -230,18 +230,13 @@ class AppointmentResource extends Resource
                                                     ->label('Procedures / Treatments')
                                                     ->relationship()
                                                     ->schema([
-
                                                         Forms\Components\Select::make('tooth_number')
                                                             ->label('Tooth Number')
                                                             ->options(array_merge(range(1, 32), ['None']))
                                                             ->required()
                                                             ->placeholder('Select')
                                                             ->reactive()
-                                                            ->disabled($user->role != 'ADMIN') // Disable for non-admin users
-                                                            ->afterStateUpdated(
-                                                                fn($state, callable $set, callable $get) =>
-                                                                $set('selected_teeth', array_unique(array_merge($get('selected_teeth') ?? [], [$state]))),
-                                                            ),
+                                                            ->disabled($user->role != 'ADMIN'),
 
                                                         Forms\Components\Select::make('procedure_id')
                                                             ->label('Procedure')
@@ -250,13 +245,19 @@ class AppointmentResource extends Resource
                                                             ->required()
                                                             ->searchable()
                                                             ->reactive()
-                                                            ->disabled($user->role != 'ADMIN') // Disable for non-admin users
-                                                            ->afterStateUpdated(
-                                                                fn($state, callable $set, callable $get) => [
-                                                                    $set('teeth_colors.' . $get('tooth_number'), $state),
-                                                                    $set('amount', Procedure::where('id', $state)->value('cost'))
-                                                                ]
-                                                            ),
+                                                            ->disabled($user->role != 'ADMIN')
+                                                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                                // Get procedure cost
+                                                                $cost = Procedure::where('id', $state)->value('cost') ?? 0;
+
+                                                                // Trigger amount field change
+                                                                $set('amount', null); // Set to null first to force update
+                                                                $set('amount', $cost); // Then set to actual cost
+                                                                $set('total_amount', $cost); // Then set to actual cost
+
+                                                                // Update total amount
+                                                                self::updateTotalAmount($set, get: $get);
+                                                            }),
 
                                                         Forms\Components\TextInput::make('amount')
                                                             ->label('Amount')
@@ -264,29 +265,32 @@ class AppointmentResource extends Resource
                                                             ->required()
                                                             ->prefix('₱')
                                                             ->reactive()
-                                                            ->disabled($user->role != 'ADMIN') // Disable for non-admin users
+                                                            ->disabled($user->role != 'ADMIN')
                                                             ->afterStateUpdated(
-                                                                fn($state, callable $set, callable $get) => $set('amount', $state) // Ensure 'amount' state is updated
+                                                                fn($state, callable $set, callable $get) =>
+                                                                self::updateTotalAmount($set, $get)
                                                             ),
                                                     ])
                                                     ->collapsible()
                                                     ->addActionLabel('Add Procedure')
                                                     ->defaultItems(0)
-                                                    ->columns(3),
+                                                    ->columns(3)
+                                                    ->afterStateUpdated(fn($state, callable $set, callable $get) => self::updateTotalAmount($set, $get)),
 
                                                 // Total Amount Field
                                                 Forms\Components\TextInput::make('total_amount')
                                                     ->label('Total Amount')
-                                                    ->disabled(true) // Always disabled since it's calculated
+                                                    ->disabled() // UI is disabled, so users can't edit
+                                                    ->dehydrated(true) // Ensures the value is still saved
                                                     ->helperText('Total amount of selected procedures')
                                                     ->reactive()
                                                     ->live()
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                                        // Sum all amounts in the repeater's 'amount' fields
-                                                        $totalAmount = collect($get('items'))
-                                                            ->sum(fn($item) => $item['amount'] ?? 0); // Sum the 'amount' values for all items in the repeater
-
-                                                        // Set the total amount in the 'total_amount' field
+                                                        // Calculate total_amount by summing all 'amount' values in the repeater
+                                                        $totalAmount = collect($get('items') ?? [])
+                                                            ->sum(fn($item) => (float) ($item['amount'] ?? 0));
+                                                
+                                                        // Update total_amount
                                                         $set('total_amount', $totalAmount);
                                                     }),
                                             ])
@@ -309,6 +313,15 @@ class AppointmentResource extends Resource
             $data['cancelled_reason_visible'] = $data['status'] === 'CANCELLED';
             return $data;
         });
+    }
+
+    /**
+     * Function to update the total amount dynamically
+     */
+    private static function updateTotalAmount(callable $set, callable $get)
+    {
+        $totalAmount = collect($get('items') ?? [])->sum(fn($item) => (float) ($item['amount'] ?? 0));
+        $set('total_amount', $totalAmount);
     }
 
     public static function table(Table $table): Table

@@ -125,5 +125,13 @@ class Appointment extends Model
 
             $builder->where('archived', false);
         });
+
+        static::saving(function ($model) {
+            // Calculate total_amount before saving
+            $totalAmount = collect($model->items ?? [])
+                ->sum(fn($item) => (float) ($item['amount'] ?? 0));
+
+            $model->total_amount = $totalAmount; // Set the total_amount
+        });
     }
 }

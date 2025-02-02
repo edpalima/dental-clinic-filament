@@ -223,7 +223,8 @@
         </tr>
         <tr>
             <td>
-                Invoice Date: <strong>{{ \Carbon\Carbon::parse($appointment->date)->translatedFormat('F j, Y') }}</strong>
+                Invoice Date:
+                <strong>{{ \Carbon\Carbon::parse($appointment->date)->translatedFormat('F j, Y') }}</strong>
             </td>
             <td>
                 {{ $appointment->doctor->address }}
@@ -242,19 +243,20 @@
     <table class="line-items-container">
         <thead>
             <tr>
-                <th class="heading-quantity">Qty</th>
-                <th class="heading-description">Description</th>
+                <th class="heading-description">Tooth Number</th>
+                <th class="heading-description">Procedures</th>
                 <th class="heading-price">Price</th>
-                <th class="heading-subtotal">Subtotal</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                {{-- <td>{{ $appointment->procedure->name }}</td> --}}
-                {{-- <td class="right">P{{ number_format($appointment->procedure->cost, 2) }}</td> --}}
-                {{-- <td class="bold">P{{ number_format($appointment->procedure->cost, 2) }}</td> --}}
-            </tr>
+            {{-- Loop through all items associated with the appointment --}}
+            @foreach ($appointment->items as $item)
+                <tr>
+                    <td>{{ $item->tooth_number }}</td>
+                    <td>{{ $item->procedure->name }}</td>
+                    <td class="bold">P{{ number_format($item->amount, 2) }}</td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
 
@@ -285,8 +287,12 @@
                     </div>
                 </td>
                 <td class="large">
-                    {{ \Carbon\Carbon::parse($appointment->date)->addDays(30)->translatedFormat('F j, Y') }}</td>
-                {{-- <td class="large total">P{{ number_format($appointment->procedure->cost, 2) }}</td> --}}
+                    {{ \Carbon\Carbon::parse($appointment->date)->addDays(30)->translatedFormat('F j, Y') }}
+                </td>
+                <td class="large total">
+                    {{-- Calculate the total sum of all item amounts --}}
+                    P{{ number_format($appointment->total_amount, 2) }}
+                </td>
             </tr>
         </tbody>
     </table>
