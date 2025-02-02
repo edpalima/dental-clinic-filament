@@ -289,14 +289,16 @@ class AppointmentResource extends Resource
                                                         // Calculate total_amount by summing all 'amount' values in the repeater
                                                         $totalAmount = collect($get('items') ?? [])
                                                             ->sum(fn($item) => (float) ($item['amount'] ?? 0));
-                                                
+
                                                         // Update total_amount
                                                         $set('total_amount', $totalAmount);
                                                     }),
                                             ])
                                             ->columnSpan(1),
                                     ]),
-                            ])->hidden($user->role ==  User::ROLE_PATIENT && fn($get) => $get('id') !== null),
+                            ])->hidden(
+                                $user->role ==  User::ROLE_PATIENT && request()->route()->named('filament.admin.resources.appointments.edit') // Hide for patients when editing
+                            ),
 
                         Forms\Components\Checkbox::make('agreement_accepted')
                             ->label('I agree to the terms and conditions')

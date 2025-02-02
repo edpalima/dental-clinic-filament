@@ -6,6 +6,7 @@ use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use App\Models\Appointment;
+use App\Models\Procedure;
 use Illuminate\Database\Eloquent\Builder;
 
 class ArchivedAppointments extends Page implements Tables\Contracts\HasTable
@@ -63,11 +64,23 @@ class ArchivedAppointments extends Page implements Tables\Contracts\HasTable
                         $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
                     });
                 }),
-            Tables\Columns\TextColumn::make('procedure.name')
+            Tables\Columns\TextColumn::make('procedures')
+                ->getStateUsing(function ($record) {
+                    if (is_array($record->procedures)) {
+                        // Get procedure names and join them with a comma
+                        $procedureNames = Procedure::whereIn('id', $record->procedures)->pluck('name')->toArray();
+                        $namesString = implode(', ', $procedureNames);
+
+                        // Truncate to 20 characters
+                        return strlen($namesString) > 15 ? substr($namesString, 0, 15) . '...' : $namesString;
+                    }
+                    return '';
+                })
+                ->label('Procedures')
                 ->searchable()
                 ->sortable(),
-            Tables\Columns\TextColumn::make('procedure.cost')
-                ->label("Cost")
+            Tables\Columns\TextColumn::make('total_amount')
+                ->label("Amount")
                 ->formatStateUsing(fn($state) => number_format($state, 2))
                 ->searchable()
                 ->sortable(),
