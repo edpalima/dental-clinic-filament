@@ -245,7 +245,7 @@
             <tr>
                 <th class="heading-description">Tooth Number</th>
                 <th class="heading-description">Procedures</th>
-                <th class="heading-price">Price</th>
+                <th class="heading-price">Amount</th>
             </tr>
         </thead>
         <tbody>
@@ -264,8 +264,8 @@
         <thead>
             <tr>
                 <th>Payment Info</th>
-                <th>Due By</th>
-                <th>Total Due</th>
+                {{-- <th>Due By</th> --}}
+                <th>Total Amount</th>
             </tr>
         </thead>
         <tbody>
@@ -286,9 +286,9 @@
                         Appointment Status: <strong>{{ $appointment->status }}</strong>
                     </div>
                 </td>
-                <td class="large">
+                {{-- <td class="large">
                     {{ \Carbon\Carbon::parse($appointment->date)->addDays(30)->translatedFormat('F j, Y') }}
-                </td>
+                </td> --}}
                 <td class="large total">
                     {{-- Calculate the total sum of all item amounts --}}
                     P{{ number_format($appointment->total_amount, 2) }}
