@@ -297,7 +297,8 @@ class AppointmentResource extends Resource
                                             ->columnSpan(1),
                                     ]),
                             ])->hidden(
-                                $user->role ==  User::ROLE_PATIENT && request()->route()->named('filament.admin.resources.appointments.edit') // Hide for patients when editing
+                                $user->role ==  User::ROLE_PATIENT && request()->route()->named('filament.admin.resources.appointments.edit')
+                                || $user->role ==  User::ROLE_PATIENT && request()->route()->named('filament.admin.resources.appointments.create')// Hide for patients when editing
                             ),
 
                         Forms\Components\Checkbox::make('agreement_accepted')
