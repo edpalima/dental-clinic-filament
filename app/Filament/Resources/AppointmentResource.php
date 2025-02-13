@@ -63,7 +63,11 @@ class AppointmentResource extends Resource
             'CANCELLED' => 'CANCELLED',
         ];
 
-        if ($user->role != User::ROLE_PATIENT || fn($get) => $get('id') !== null) {
+        if (
+            $user->role != User::ROLE_PATIENT
+            || ($user->role != User::ROLE_PATIENT && fn($get) => $get('id') !== null)
+            || request()->routeIs('filament.admin.resources.appointments.view')
+        ) {
             $defaultStatus['CONFIRMED'] = 'CONFIRMED';
             $defaultStatus['REJECTED'] = 'REJECTED';
             $defaultStatus['COMPLETED'] = 'COMPLETED';
@@ -282,7 +286,7 @@ class AppointmentResource extends Resource
                                                     ->label('Total Amount')
                                                     ->disabled() // UI is disabled, so users can't edit
                                                     ->dehydrated(true) // Ensures the value is still saved
-                                                    ->helperText('Total amount of selected procedures')
+                                                    ->helperText('Price may vary')
                                                     ->reactive()
                                                     ->live()
                                                     ->afterStateUpdated(function ($state, callable $set, callable $get) {
@@ -297,8 +301,9 @@ class AppointmentResource extends Resource
                                             ->columnSpan(1),
                                     ]),
                             ])->hidden(
-                                $user->role ==  User::ROLE_PATIENT && request()->route()->named('filament.admin.resources.appointments.edit')
-                                || $user->role ==  User::ROLE_PATIENT && request()->route()->named('filament.admin.resources.appointments.create')// Hide for patients when editing
+                                $user->role == User::ROLE_PATIENT
+                                    || request()->routeIs('filament.admin.resources.appointments.create')
+                                    || request()->routeIs('filament.admin.resources.appointments.edit')
                             ),
 
                         Forms\Components\Checkbox::make('agreement_accepted')

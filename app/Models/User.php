@@ -17,6 +17,15 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $fillable = [
+        'name',
+        'email',
+        'photo',
+        'password',
+        'role',
+        'remember_token',
+    ];
+
     const ROLE_ADMIN = 'ADMIN';
     const ROLE_DOCTOR = 'DOCTOR';
     const ROLE_PATIENT = 'PATIENT';
@@ -45,14 +54,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     {
         return $this->role === self::ROLE_PATIENT;
     }
-    protected $fillable = [
-        'name',
-        'email',
-        'photo',
-        'password',
-        'role',
-        'remember_token',
-    ];
 
     /**
      * The attributes that should be hidden for serialization.
