@@ -300,10 +300,10 @@ class AppointmentResource extends Resource
                                             ])
                                             ->columnSpan(1),
                                     ]),
-                            ])->hidden(
-                                $user->role == User::ROLE_PATIENT
-                                    || request()->routeIs('filament.admin.resources.appointments.create')
-                                    || request()->routeIs('filament.admin.resources.appointments.edit')
+                            ])
+                            ->hidden(
+                                fn(string $operation) =>
+                                Filament::auth()->user()->role == User::ROLE_PATIENT && in_array($operation, ['create', 'edit'])
                             ),
 
                         Forms\Components\Checkbox::make('agreement_accepted')
