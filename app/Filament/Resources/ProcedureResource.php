@@ -33,7 +33,7 @@ class ProcedureResource extends Resource
                     ->required()
                     ->maxLength(30),
 
-                Forms\Components\Textarea::make('description')
+                Forms\Components\RichEditor::make('description')
                     ->columnSpanFull(),
 
                 Forms\Components\TextInput::make('cost')

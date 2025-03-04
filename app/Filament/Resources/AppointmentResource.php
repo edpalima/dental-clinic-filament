@@ -189,9 +189,29 @@ class AppointmentResource extends Resource
                                 Forms\Components\Select::make('procedures')
                                     ->label('Procedure(s)')
                                     ->multiple() // Allow multiple selection
-                                    ->options(function () {
-                                        // Show all procedures in a list, ordered by name
-                                        return Procedure::orderBy('name')->pluck('name', 'id');
+                                    ->reactive()
+                                    ->options(function (callable $get) {
+                                        $selectedProcedures = $get('procedures'); // Get currently selected procedures
+
+                                        $procedures = Procedure::orderBy('name')->get(); // Fetch all procedures
+
+                                        return $procedures->filter(function ($procedure) use ($selectedProcedures) {
+                                            if (empty($selectedProcedures)) {
+                                                return true; // Allow all if nothing is selected
+                                            }
+
+                                            if (in_array($procedure->id, $selectedProcedures)) {
+                                                return true; // Keep already selected procedures
+                                            }
+
+                                            if ($procedure->cant_combine) {
+                                                // If cant_combine is true, only allow it to be selected if it's the only one selected
+                                                return count($selectedProcedures) === 0;
+                                            }
+
+                                            // Allow other procedures if no cant_combine procedure is selected
+                                            return !Procedure::whereIn('id', $selectedProcedures)->where('cant_combine', true)->exists();
+                                        })->pluck('name', 'id');
                                     })
                                     ->required(),
 
