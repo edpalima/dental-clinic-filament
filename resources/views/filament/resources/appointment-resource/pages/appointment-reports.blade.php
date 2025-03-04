@@ -18,17 +18,19 @@
                         class="block w-full mt-1 rounded-md border-gray-300 shadow-sm">
                 </div>
 
+                @if(Auth::user()->isAdmin())
                 <!-- Customer Filter -->
                 <div class="flex-1">
-                    <label for="patientId" class="block text-sm font-medium text-gray-700">Customer</label>
-                    <select id="patientId" wire:model="patientId"
-                        class="block w-full mt-1 rounded-md border-gray-300 shadow-sm">
-                        <option value="">Select a customer</option>
-                        @foreach ($patients as $id => $name)
-                            <option value="{{ $id }}">{{ ucfirst($name) }}</option>
-                        @endforeach
-                    </select>
+                  <label for="patientId" class="block text-sm font-medium text-gray-700">Customer</label>
+                  <select id="patientId" wire:model="patientId"
+                    class="block w-full mt-1 rounded-md border-gray-300 shadow-sm">
+                    <option value="">Select a customer</option>
+                    @foreach ($patients as $id => $name)
+                      <option value="{{ $id }}">{{ ucfirst($name) }}</option>
+                    @endforeach
+                  </select>
                 </div>
+                @endif
 
                 <!-- Buttons -->
                 <div class="flex gap-2">
