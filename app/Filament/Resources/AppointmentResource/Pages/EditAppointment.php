@@ -38,7 +38,7 @@ class EditAppointment extends EditRecord
             if (in_array($appointment->status, ['CONFIRMED', 'CANCELLED'])) {
                 Mail::send('emails.status-send', ['appointment' => $appointment], function ($message) use ($customerEmail) {
                     $message->to($customerEmail);
-                    $message->subject('Your Rental was Updated');
+                    $message->subject('Your Appointment was Updated');
                 });
             }
         } catch (\Exception $e) {
