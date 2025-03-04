@@ -28,11 +28,24 @@ class ProcedureResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+
+                Forms\Components\Textarea::make('short_description')
+                    ->required()
+                    ->maxLength(30),
+
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
+
                 Forms\Components\TextInput::make('cost')
                     ->required()
-                    ->numeric()
+                    ->numeric(),
+
+                Forms\Components\Select::make('cant_combine')
+                    ->label('Can\'t Combine With')
+                    ->options(fn() => Procedure::pluck('name', 'id')->toArray())
+                    ->multiple()
+                    ->placeholder('Select')
+                    ->reactive()
             ]);
     }
 
@@ -44,9 +57,11 @@ class ProcedureResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('short_description')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->extraAttributes([
-                        'style' => 'max-width: 600px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+                        'style' => 'max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
                     ])
                     ->searchable(),
                 Tables\Columns\TextColumn::make('cost')

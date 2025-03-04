@@ -51,7 +51,6 @@ class AppointmentsSummary extends Report
             ]);
     }
 
-
     public function body(Body $body): Body
     {
         return $body
@@ -162,8 +161,8 @@ class AppointmentsSummary extends Report
         return $query->get()->map(function ($appointment) {
             return [
                 'id' => $appointment->id,
-                'patient' => $appointment->patient->fullname,
-                'doctor' => $appointment->doctor->fullname,
+                'patient' => ucfirst($appointment->patient->fullname),
+                'doctor' => ucfirst($appointment->doctor->fullname),
                 'date' => $appointment->date,
                 'time' => Carbon::parse($appointment->time->time_start)->format('h:i A'),
                 'status' => $appointment->status,

@@ -31,6 +31,7 @@ use Filament\Support\Enums\Alignment;
 use Illuminate\Support\HtmlString;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Closure;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Blade;
 
@@ -89,7 +90,7 @@ class AppointmentResource extends Resource
                                     ->minDate(fn($get) => $get('id') === null ? today()->addDay() : null) // Ensure booking starts from tomorrow only on create forms
                                     ->default($selectedDate) // Set the default date if available in the query
                                     ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null))
-                                    ->disabled(fn($get) => $get('id') !== null), // Disable if editing
+                                    ->disabled(fn(string $operation) => in_array($operation, ['edit']) || $selectedDate !== null),
 
                                 Forms\Components\Select::make('time_id')
                                     ->label('Appointment Time')
@@ -140,7 +141,31 @@ class AppointmentResource extends Resource
                                     ->hidden(fn(callable $get) => !$get('date'))
                                     ->disabled(fn($get) => $get('id') !== null) // Disable if editing
                                     ->required(fn(callable $get) => $get('date') !== null)
-                                    ->extraInputAttributes(['class' => 'select-time-disable']),
+                                    ->extraInputAttributes(['class' => 'select-time-disable'])
+                                    ->validationAttribute('appointment time')
+                                    ->rules([
+                                        fn(callable $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                            $selectedDate = $get('date');
+                                            $currentAppointmentId = $get('id'); // Get the current appointment ID
+
+                                            if (!$selectedDate || !$value) {
+                                                return; // Skip validation if no date or time selected
+                                            }
+
+                                            // Get all booked time slots for the selected date, excluding the current appointment
+                                            $bookedTimeIds = Appointment::whereDate('date', $selectedDate)
+                                                ->when($currentAppointmentId, function ($query, $id) {
+                                                    return $query->where('id', '!=', $id);
+                                                })
+                                                ->pluck('time_id')
+                                                ->toArray();
+
+                                            // If the selected time is already booked, fail validation
+                                            if (in_array($value, $bookedTimeIds)) {
+                                                $fail('The selected time is already booked.');
+                                            }
+                                        },
+                                    ])
                             ]),
 
                         // Assign Section
@@ -220,7 +245,7 @@ class AppointmentResource extends Resource
 
                         Fieldset::make('PROCEDURE DATA')
                             ->schema([
-                                Forms\Components\Grid::make(2) // Split layout: Left (Repeater), Right (Tooth Chart)
+                                Forms\Components\Grid::make(3) // Split layout: Left (Repeater), Right (Tooth Chart)
                                     ->schema([
 
                                         Forms\Components\Placeholder::make('documentation')
@@ -234,16 +259,9 @@ class AppointmentResource extends Resource
                                                     ->label('Procedures / Treatments')
                                                     ->relationship()
                                                     ->schema([
-                                                        Forms\Components\Select::make('tooth_number')
-                                                            ->label('Tooth Number')
-                                                            ->options(array_merge(range(1, 32), ['None']))
-                                                            ->required()
-                                                            ->placeholder('Select')
-                                                            ->reactive()
-                                                            ->disabled($user->role != 'ADMIN'),
-
                                                         Forms\Components\Select::make('procedure_id')
                                                             ->label('Procedure')
+                                                            ->helperText(fn($get) => Procedure::where('id', $get('procedure_id'))->value('short_description') ?? '')
                                                             ->options(fn() => Procedure::pluck('name', 'id'))
                                                             ->placeholder('Select')
                                                             ->required()
@@ -262,6 +280,15 @@ class AppointmentResource extends Resource
                                                                 // Update total amount
                                                                 self::updateTotalAmount($set, get: $get);
                                                             }),
+
+                                                        Forms\Components\Select::make('tooth_number')
+                                                            ->label('Tooth Number')
+                                                            ->options(array_merge(range(1, 32), ['None']))
+                                                            ->multiple()
+                                                            ->required()
+                                                            ->placeholder('Select')
+                                                            ->reactive()
+                                                            ->disabled($user->role != 'ADMIN'),
 
                                                         Forms\Components\TextInput::make('amount')
                                                             ->label('Amount')
@@ -298,7 +325,7 @@ class AppointmentResource extends Resource
                                                         $set('total_amount', $totalAmount);
                                                     }),
                                             ])
-                                            ->columnSpan(1),
+                                            ->columnSpan(2),
                                     ]),
                             ])
                             ->hidden(
@@ -307,7 +334,7 @@ class AppointmentResource extends Resource
                             ),
 
                         Forms\Components\Checkbox::make('agreement_accepted')
-                            ->label('I agree to the terms and conditions')
+                            ->label(fn() => new HtmlString('I accept the <a href="/consent-agreement" target="_blank" style="color:red">Consent Agreement</a>'))
                             ->required()
                             ->disabled(fn($get) => $get('id') !== null) // Disable if editing
                             ->columnSpanFull(),

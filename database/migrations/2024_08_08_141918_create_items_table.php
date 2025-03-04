@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('appointment_id');
-            $table->integer('tooth_number'); // Changed from `tooth_number_id`
+            $table->json('tooth_number')->nullable();
             $table->unsignedBigInteger('procedure_id');
             $table->string('amount')->nullable();
             $table->text('notes')->nullable();

@@ -12,6 +12,12 @@ class Procedure extends Model
     protected $fillable = [
         'name',
         'description',
-        'cost'
+        'cost',
+        'short_description',
+        'cant_combine'
+    ];
+
+    protected $casts = [
+        'cant_combine' => 'array',
     ];
 }

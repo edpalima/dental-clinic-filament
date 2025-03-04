@@ -15,6 +15,10 @@ class Item extends Model
         'notes'
     ];
 
+    protected $casts = [
+        'tooth_number' => 'array',
+    ];
+
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);
