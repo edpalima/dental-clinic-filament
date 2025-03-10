@@ -248,7 +248,7 @@ class AppointmentResource extends Resource
                                 // No-show Checkbox for Confirmed Status
                                 Forms\Components\Checkbox::make('no_show')
                                     ->label('No Show')
-                                    ->hidden(fn($get) => $get('status') !== 'CONFIRMED')
+                                    ->hidden(fn($get) => $get('status') !== 'CONFIRMED' || $user->role == User::ROLE_PATIENT)
                                     ->columnSpanFull(),
 
                                 // // Checkbox for 'agreement_accepted'
@@ -303,7 +303,7 @@ class AppointmentResource extends Resource
 
                                                         Forms\Components\Select::make('tooth_number')
                                                             ->label('Tooth Number')
-                                                            ->options(array_merge(range(1, 32), ['None']))
+                                                            ->options(array_merge(range(1, 32), ['All', 'None']))
                                                             ->multiple()
                                                             ->required()
                                                             ->placeholder('Select')
