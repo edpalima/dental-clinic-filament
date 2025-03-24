@@ -16,7 +16,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="first_name">First Name</label>
+                                <label for="first_name">First Name <span class="star-red">*</span></label>
                                 <input type="text" class="form-control @error('first_name') is-invalid @enderror"
                                     id="first_name" wire:model="first_name">
                                 @error('first_name')
@@ -36,7 +36,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="last_name">Last Name</label>
+                                <label for="last_name">Last Name <span class="star-red">*</span></label>
                                 <input type="text" class="form-control @error('last_name') is-invalid @enderror"
                                     id="last_name" wire:model="last_name">
                                 @error('last_name')
@@ -56,7 +56,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="religion">Religion</label>
+                                <label for="religion">Religion <span class="star-red">*</span></label>
                                 <input type="text" class="form-control @error('religion') is-invalid @enderror"
                                     id="religion" wire:model="religion">
                                 @error('religion')
@@ -66,7 +66,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="nationality">Nationality</label>
+                                <label for="nationality">Nationality <span class="star-red">*</span></label>
                                 <input type="text" class="form-control @error('nationality') is-invalid @enderror"
                                     id="nationality" wire:model="nationality">
                                 @error('nationality')
@@ -76,7 +76,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="gender">Sex</label>
+                                <label for="gender">Sex <span class="star-red">*</span></label>
                                 <select class="form-control @error('gender') is-invalid @enderror" id="gender"
                                     wire:model="gender">
                                     <option value="">Select Sex</option>
@@ -90,7 +90,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="occupation">Occupation</label>
+                                <label for="occupation">Occupation <span class="star-red">*</span></label>
                                 <input type="text" class="form-control @error('occupation') is-invalid @enderror"
                                     id="occupation" wire:model="occupation">
                                 @error('occupation')
@@ -100,7 +100,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="contact_no">Contact Number</label>
+                                <label for="contact_no">Contact Number <span class="star-red">*</span></label>
                                 <input type="number" class="form-control @error('contact_no') is-invalid @enderror"
                                     id="contact_no" wire:model="contact_no">
                                 @error('contact_no')
@@ -110,7 +110,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="address">Address</label>
+                                <label for="address">Address <span class="star-red">*</span></label>
                                 <input type="text" class="form-control @error('address') is-invalid @enderror"
                                     id="address" wire:model="address">
                                 @error('address')
@@ -882,7 +882,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="email">Email</label>
+                                <label for="email">Email <span class="star-red">*</span></label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror"
                                     id="email" wire:model="email" required>
                                 @error('email')
@@ -892,7 +892,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="password">Password</label>
+                                <label for="password">Password <span class="star-red">*</span></label>
                                 <input type="password" class="form-control @error('password') is-invalid @enderror"
                                     id="password" wire:model="password" required>
                                 @error('password')
@@ -902,7 +902,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group mb-3">
-                                <label for="passwordConfirmation">Confirm Password</label>
+                                <label for="passwordConfirmation">Confirm Password <span class="star-red">*</span></label>
                                 <input type="password"
                                     class="form-control @error('passwordConfirmation') is-invalid @enderror"
                                     id="passwordConfirmation" wire:model="passwordConfirmation" required>

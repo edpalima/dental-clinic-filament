@@ -77,6 +77,21 @@ class Patient extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function getFirstNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
+
+    public function getLastNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
+
+    public function getMiddleNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
+
     protected static function booted()
     {
         static::addGlobalScope('role', function (Builder $builder) {

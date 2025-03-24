@@ -21,4 +21,19 @@ class Doctor extends Model
     {
         return $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name;
     }
+
+    public function getFirstNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
+
+    public function getLastNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
+
+    public function getMiddleNameAttribute($value)
+    {
+        return ucfirst($value);
+    }
 }

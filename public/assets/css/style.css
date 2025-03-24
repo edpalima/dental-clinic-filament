@@ -1817,3 +1817,7 @@ section {
 .carousel-inner .row {
   justify-content: center;
 }
+
+.star-red {
+  color:red;
+}
