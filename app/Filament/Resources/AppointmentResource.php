@@ -101,7 +101,8 @@ class AppointmentResource extends Resource
                                         }
 
                                         // Get all booked time slots for the selected date
-                                        $bookedTimeIds = Appointment::whereDate('date', $selectedDate)
+                                        $bookedTimeIds = Appointment::withoutGlobalScope('userRoleFilter')
+                                            ->whereDate('date', $selectedDate)
                                             ->pluck('time_id')
                                             ->toArray();
 
@@ -128,7 +129,8 @@ class AppointmentResource extends Resource
                                         }
 
                                         // Get all booked time slots for the selected date, excluding the current appointment's time
-                                        $bookedTimeIds = Appointment::whereDate('date', $selectedDate)
+                                        $bookedTimeIds = Appointment::withoutGlobalScope('userRoleFilter')
+                                            ->whereDate('date', $selectedDate)
                                             ->when($currentAppointmentId, function ($query, $id) {
                                                 return $query->where('id', '!=', $id);
                                             })
@@ -153,7 +155,8 @@ class AppointmentResource extends Resource
                                             }
 
                                             // Get all booked time slots for the selected date, excluding the current appointment
-                                            $bookedTimeIds = Appointment::whereDate('date', $selectedDate)
+                                            $bookedTimeIds = Appointment::withoutGlobalScope('userRoleFilter')
+                                                ->whereDate('date', $selectedDate)
                                                 ->when($currentAppointmentId, function ($query, $id) {
                                                     return $query->where('id', '!=', $id);
                                                 })
