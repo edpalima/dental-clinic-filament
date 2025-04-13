@@ -42,6 +42,7 @@ Route::get(
 Route::get('/appointment-reports/pdf', [ReportController::class, 'generateAppointmentReportPdf'])->name('appointment-reports.pdf');
 
 Route::post('/appointments/fetch', [AppointmentsController::class, 'fetch'])->name('appointments.fetch');
+Route::get('/appointments/closed-days', [AppointmentsController::class, 'getClosedDays'])->name('calendar.closed-days');
 
 Route::get('/email/verify/{token}', [EmailVerificationController::class, 'verify'])->name('email.verify');
 

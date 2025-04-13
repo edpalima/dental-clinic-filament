@@ -8,12 +8,14 @@ use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Filament\Resources\AppointmentResource\RelationManagers\ItemsRelationManager;
 // use App\Filament\Resources\Filters\AppointmentStatusFilter;
 use App\Models\Appointment;
+use App\Models\ClosedDay;
 use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\Procedure;
 use App\Models\Time;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Forms;
 use Filament\Forms\Components\Wizard;
@@ -77,6 +79,20 @@ class AppointmentResource extends Resource
         // Get the selected date from the query parameter
         $selectedDate = request()->query('date'); // Fetch 'selected_date' from URL query parameters
 
+        // Get the closed days
+        $closedDays = ClosedDay::where('is_active', true)->get();
+        $specificClosedDates = $closedDays->where('repeat_day', null)
+            ->pluck('date')
+            ->map(fn($date) => $date->format('Y-m-d'))
+            ->toArray();
+
+        $repeatClosedDays = $closedDays->where('repeat_day', '!=', null)
+            ->pluck('repeat_day')
+            ->toArray();
+
+        // Get repeat closed dates
+        $repeatClosedDates = self::getRepeatClosedDates($repeatClosedDays);
+
         return $form
             ->schema([
                 Section::make()
@@ -87,10 +103,19 @@ class AppointmentResource extends Resource
                                 Forms\Components\DatePicker::make('date')
                                     ->required()
                                     ->live()
+                                    ->native(false)
                                     ->minDate(fn($get) => $get('id') === null ? today()->addDay() : null) // Ensure booking starts from tomorrow only on create forms
                                     ->default($selectedDate) // Set the default date if available in the query
                                     ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null))
-                                    ->disabled(fn(string $operation) => in_array($operation, ['edit']) || $selectedDate !== null),
+                                    ->disabled(fn(string $operation) => in_array($operation, ['edit']) || $selectedDate !== null)
+                                    ->disabledDates(function () use ($specificClosedDates, $repeatClosedDates) {
+                                        // Get weekends and specific closed dates
+
+                                        // Merge all closed dates
+                                        $disabledDates = array_merge($specificClosedDates, $repeatClosedDates);
+
+                                        return $disabledDates;
+                                    }),
 
                                 Forms\Components\Select::make('time_id')
                                     ->label('Appointment Time')
@@ -531,5 +556,26 @@ class AppointmentResource extends Resource
         }
 
         return $times;
+    }
+
+    private static function getRepeatClosedDates(array $repeatDays)
+    {
+        $repeatClosedDates = [];
+        $today = Carbon::today();
+        $period = CarbonPeriod::create($today, $today->copy()->addYears(75)); // Next 75 years
+
+        foreach ($period as $date) {
+            // Get the current day name, formatted as "Monday", "Tuesday", etc.
+            $dayName = $date->format('l'); // This will return "Monday", "Tuesday", etc.
+
+            // Check if the day is in the repeat days list (case-insensitive)
+            if (in_array(strtolower($dayName), array_map('strtolower', $repeatDays))) {
+                // If the day matches, add the formatted date to the array
+                $repeatClosedDates[] = $date->format('Y-m-d'); // "2025-04-15", etc.
+            }
+        }
+
+        // Return the array of repeat closed dates
+        return $repeatClosedDates;
     }
 }

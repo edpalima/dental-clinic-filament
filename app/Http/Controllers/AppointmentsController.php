@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\ClosedDay;
 use Illuminate\Http\Request;
 
 class AppointmentsController extends Controller
@@ -35,5 +36,23 @@ class AppointmentsController extends Controller
             ->toArray();
 
         return response()->json($appointments);
+    }
+
+    public function getClosedDays()
+    {
+        $closedDays = ClosedDay::where('is_active', true)->get();
+
+        $specificDates = $closedDays->whereNotNull('date')->pluck('date')->map(function ($date) {
+            return $date->format('Y-m-d');
+        })->toArray();
+
+        $repeatDays = $closedDays->whereNotNull('repeat_day')->pluck('repeat_day')->map(function ($day) {
+            return strtolower($day); // fullcalendar uses lowercase
+        })->unique()->values()->toArray();
+
+        return response()->json([
+            'specificDates' => $specificDates,
+            'repeatDays' => $repeatDays,
+        ]);
     }
 }

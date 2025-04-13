@@ -18,7 +18,7 @@ class TimeResource extends Resource
 {
     protected static ?string $model = Time::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
 
     protected static ?string $navigationGroup = 'Settings';
 

@@ -62,11 +62,29 @@
             }
 
             /* Specific date styling */
-            .specific-date {
-                background-color: red !important;
-                /* Red color for the specific date */
-                color: white !important;
-                /* White text color for readability */
+            .closed-date {
+                background-color: #fef2f2 !important;
+                /* subtle red tint (tailwind rose-50) */
+                color: inherit !important;
+                border: 1px dashed #fca5a5;
+                /* light red border */
+                position: relative;
+
+                z-index: -10;
+            }
+
+            .closed-date::after {
+                content: "Closed";
+                font-size: 10px;
+                color: #991b1b;
+                background-color: #fcdcdc;
+                /* pale red background */
+                padding: 2px 4px;
+                border-radius: 4px;
+                position: absolute;
+                bottom: 4px;
+                right: 4px;
+                z-index: -10;
             }
         </style>
     @endpush
@@ -79,6 +97,17 @@
                 var calendarEl = document.getElementById('calendar');
                 var statusButtons = document.querySelectorAll('.status-filter-btn');
                 var selectedStatus = ''; // Default to all statuses
+                let specificClosedDates = [];
+                let repeatClosedDays = [];
+
+                // Fetch closed days first
+                fetch('{{ route('calendar.closed-days') }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        specificClosedDates = data.specificDates; // e.g. ['2025-04-15', '2025-04-16']
+                        repeatClosedDays = data.repeatDays; // e.g. ['sunday', 'saturday']
+                        initCalendar(); // Only initialize calendar after data is ready
+                    });
 
                 // Function to fetch events from the server
                 function fetchEvents(fetchInfo, successCallback, failureCallback) {
@@ -145,79 +174,121 @@
                         .catch((error) => failureCallback(error));
                 }
 
-                // Initialize FullCalendar
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    selectable: true,
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay',
-                    },
-                    events: fetchEvents, // Events fetched via the `fetchEvents` function
-                    eventClick: function(info) {
-                        window.location.href =
-                            '{{ route('filament.admin.resources.appointments.view', ['record' => '__appointmentId__']) }}'
-                            .replace('__appointmentId__', info.event.id);
-                    },
-                    dateClick: function(info) {
-                        const selectedDate = info.dateStr;
-                        const today = new Date().toISOString().split('T')[0];
-                        if (selectedDate > today) {
+
+                function initCalendar() {
+                    // Initialize FullCalendar
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        selectable: true,
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                        },
+                        events: fetchEvents, // Events fetched via the `fetchEvents` function
+                        eventClick: function(info) {
+                            window.location.href =
+                                '{{ route('filament.admin.resources.appointments.view', ['record' => '__appointmentId__']) }}'
+                                .replace('__appointmentId__', info.event.id);
+                        },
+                        dateClick: function(info) {
+                            const selectedDate = info.dateStr;
+                            const today = new Date().toISOString().split('T')[0];
+
+                            const isClosedSpecific = specificClosedDates.includes(selectedDate);
+                            const dayName = info.date.toLocaleString('en-US', {
+                                weekday: 'long'
+                            }).toLowerCase();
+                            const isRepeatClosed = repeatClosedDays.includes(dayName);
+
+                            if (selectedDate <= today) {
+                                alert('You cannot select a past date.');
+                                return;
+                            }
+
+                            // Block closed or past dates
+                            if (isClosedSpecific || isRepeatClosed) {
+                                alert('This date is closed.');
+                                return;
+                            }
+
                             window.location.href =
                                 '{{ route('filament.admin.resources.appointments.create') }}' +
-                                '?date=' +
-                                selectedDate;
-                        } else {
-                            alert('Please select a future date to create an appointment.');
-                        }
-                    },
-                    eventOrder: "-time_id", // Sort events by start date
-                    validRange: {
-                        start: '2020-01-01',
-                        end: '2099-12-31',
-                    },
+                                '?date=' + selectedDate;
+                        },
+                        eventOrder: "-time_id", // Sort events by start date
+                        validRange: {
+                            start: '2020-01-01',
+                            end: '2099-12-31',
+                        },
+                        datesSet: function() {
+                            const today = new Date().toISOString().split('T')[0];
+                            const allCells = document.querySelectorAll('.fc-daygrid-day-frame');
 
-                    // Use 'datesRender' to apply inactive styles for past/present dates
-                    datesRender: function() {
-                        const today = new Date().toISOString().split('T')[0];
-                        const specificDate =
-                            '2025-01-24'; // Replace with your desired specific date (e.g., '2025-01-25')
+                            allCells.forEach(function(cell) {
+                                const cellDate = cell.closest('.fc-daygrid-day')?.dataset.date;
+                                if (!cellDate) return;
 
-                        // Loop through all cells and add classes for past, present, and specific dates
-                        const allCells = document.querySelectorAll('.fc-daygrid-day-frame');
-                        allCells.forEach(function(cell) {
-                            const cellDate = cell.getAttribute('data-date');
-                            if (cellDate < today) {
-                                cell.classList.add('past-date'); // Add class for past dates
-                            } else if (cellDate === today) {
-                                cell.classList.add('present-date'); // Add class for today
-                            }
+                                const dateObj = new Date(cellDate);
+                                const dayName = dateObj.toLocaleString('en-US', {
+                                    weekday: 'long'
+                                }).toLowerCase();
 
-                            // Set color for specific date
-                            if (cellDate === specificDate) {
-                                cell.classList.add(
-                                    'specific-date'); // Add class for the specific date
-                            }
-                        });
-                    },
-                });
+                                if (cellDate < today) {
+                                    cell.classList.add('past-date');
+                                } else if (cellDate === today) {
+                                    cell.classList.add('present-date');
+                                }
 
-                calendar.render();
+                                if (specificClosedDates.includes(cellDate) || repeatClosedDays
+                                    .includes(
+                                        dayName)) {
+                                    cell.classList.add('closed-date');
+                                }
+                            });
+                        },
 
-                // Handle status filter buttons
-                statusButtons.forEach(function(button) {
-                    button.addEventListener('click', function() {
-                        // Remove active class from all buttons
-                        statusButtons.forEach((btn) => btn.classList.remove('active'));
-                        // Add active class to the clicked button
-                        this.classList.add('active');
-                        // Update selected status
-                        selectedStatus = this.getAttribute('data-status');
-                        // Refetch calendar events
-                        calendar.refetchEvents();
+                        // Use 'datesRender' to apply inactive styles for past/present dates
+                        datesRender: function() {
+                            const today = new Date().toISOString().split('T')[0];
+                            const specificDate =
+                                '2025-01-24'; // Replace with your desired specific date (e.g., '2025-01-25')
+
+                            // Loop through all cells and add classes for past, present, and specific dates
+                            const allCells = document.querySelectorAll('.fc-daygrid-day-frame');
+                            allCells.forEach(function(cell) {
+                                const cellDate = cell.getAttribute('data-date');
+                                if (cellDate < today) {
+                                    cell.classList.add('past-date'); // Add class for past dates
+                                } else if (cellDate === today) {
+                                    cell.classList.add('present-date'); // Add class for today
+                                }
+
+                                // Set color for specific date
+                                if (cellDate === specificDate) {
+                                    cell.classList.add(
+                                        'closed-date'); // Add class for the specific date
+                                }
+                            });
+                        },
                     });
-                });
+
+                    calendar.render();
+
+                    // Handle status filter buttons
+                    statusButtons.forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            // Remove active class from all buttons
+                            statusButtons.forEach((btn) => btn.classList.remove('active'));
+                            // Add active class to the clicked button
+                            this.classList.add('active');
+                            // Update selected status
+                            selectedStatus = this.getAttribute('data-status');
+                            // Refetch calendar events
+                            calendar.refetchEvents();
+                        });
+                    });
+                }
             });
         </script>
     @endpush
