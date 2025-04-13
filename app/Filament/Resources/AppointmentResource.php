@@ -562,7 +562,7 @@ class AppointmentResource extends Resource
     {
         $repeatClosedDates = [];
         $today = Carbon::today();
-        $period = CarbonPeriod::create($today, $today->copy()->addYears(75)); // Next 75 years
+        $period = CarbonPeriod::create($today, $today->copy()->addYears(5)); // Next 5 years
 
         foreach ($period as $date) {
             // Get the current day name, formatted as "Monday", "Tuesday", etc.
