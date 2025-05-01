@@ -21,6 +21,7 @@ class StatsOverview extends BaseWidget
             Stat::make('Total Appointments', Appointment::count())
                 ->description('Total created appointments')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->url(route('filament.admin.resources.appointments.index'))
             // ->color('success')
             // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
             ,
@@ -28,6 +29,7 @@ class StatsOverview extends BaseWidget
             Stat::make('Total Patients', Patient::count())
                 ->description('Total registered Patients')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->url(route('filament.admin.resources.patients.index'))
             // ->color('danger')
             // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
             ,
@@ -35,6 +37,7 @@ class StatsOverview extends BaseWidget
             Stat::make('Total Users', User::count())
                 ->description('Total created users')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
+                ->url(route('filament.admin.resources.users.index'))
             // ->color('danger')
             // ->chart([7, 3, 4, 5, 6, 3, 5, 3])
         ];

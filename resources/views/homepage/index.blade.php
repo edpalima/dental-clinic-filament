@@ -10,7 +10,7 @@
 
                 <!-- Slide 1 -->
                 <div class="carousel-item active"
-                    style="background-image: url({{ URL::to('assets/img/slide/slide-1.jpg') }})">
+                    style="background-image: url({{ URL::to('assets/img/slide/bgs.jpg') }})">
                     <div class="container">
                         <h2>Smile Brighter, Live Better</h2>
                         <p>At Almoro Santiago Dental Clinic, we're dedicated to brightening smiles and improving lives.
@@ -21,7 +21,7 @@
                 </div>
 
                 <!-- Slide 2 -->
-                <div class="carousel-item" style="background-image: url({{ URL::to('assets/img/slide/slide-2.jpg') }})">
+                <div class="carousel-item" style="background-image: url({{ URL::to('assets/img/slide/bgss.jpg') }})">
                     <div class="container">
                         <h2>Our Passion, Your Smile</h2>
                         <p>Almoro Santiago Dental Clinic is committed to making your smile our top priority. Our
@@ -32,7 +32,7 @@
                 </div>
 
                 <!-- Slide 3 -->
-                <div class="carousel-item" style="background-image: url({{ URL::to('assets/img/slide/slide-3.jpg') }})">
+                <div class="carousel-item" style="background-image: url({{ URL::to('assets/img/slide/bgssss.jpg') }})">
                     <div class="container">
                         <h2>Crafting Radiant Smiles, Every Day.</h2>
                         <p>At Almoro Santiago Dental Clinic, we specialize in crafting radiant smiles that light up your
