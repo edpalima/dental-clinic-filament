@@ -31,7 +31,7 @@ class PendingAppointments extends Page implements Tables\Contracts\HasTable
     }
     public static function getNavigationBadgeColor(): string|array|null
     {
-        return 'primary';
+        return 'gray';
     }
 
     protected function getTableColumns(): array

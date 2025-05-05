@@ -35,19 +35,20 @@ class AdminPanelProvider extends PanelProvider
             ->emailVerification()
             ->profile(isSimple: false)
             ->colors([
-                'danger' => Color::Red,
-                'gray' => Color::Slate,
-                'info' => Color::Blue,
-                'primary' => '#061c34',
-                'success' => Color::Emerald,
-                'warning' => Color::Orange,
+                //'danger' => Color::Red,
+                //'gray' => Color::Slate,
+                //'info' => Color::Blue,
+                'primary' => '#06a3da',
+                //'success' => Color::Emerald,
+                //'warning' => Color::Orange,
             ])
             ->font('Poppins')
             // ->sidebarCollapsibleOnDesktop()
             ->sidebarFullyCollapsibleOnDesktop()
             // ->viteTheme('resources/css/filament/admin/theme.css')
             // ->darkMode(true)
-            ->brandLogo(asset('assets/img/logo.png'))
+            ->brandLogo(asset('assets/img/logo.jpg'))
+            ->brandLogoHeight('3rem') 
             ->favicon(asset('assets/img/logo-circle.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
