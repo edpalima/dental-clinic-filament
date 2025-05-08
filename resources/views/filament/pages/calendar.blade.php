@@ -147,10 +147,10 @@
                                         bgColor = '#F59E0B'; // Yellow for pending
                                         break;
                                     case 'REJECTED':
-                                        bgColor = '#EF4444'; // Red for cancelled
+                                        bgColor = '#000000'; // Red for cancelled
                                         break;
                                     case 'COMPLETED':
-                                        bgColor = '#10B981'; // Green for Completed
+                                        bgColor = '#fedd89'; // Green for Completed
                                         break;
                                     default:
                                         bgColor = '#061c34'; // primary color

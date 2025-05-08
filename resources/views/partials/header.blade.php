@@ -14,7 +14,7 @@
 <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center">
 
-        <a href="/" class="logo me-auto"><img src="{{ URL::to('assets/img/logo.png') }}" alt=""></a>
+        <a href="/" class="logo me-auto"><img src="{{ URL::to('assets/img/logo.jpg') }}" alt=""></a>
         <!-- Uncomment below if you prefer to use an image logo -->
         <!-- <h1 class="logo me-auto"><a href="index.html">Medicio</a></h1> -->
 
