@@ -146,16 +146,16 @@
                                 let bgColor;
                                 switch (event.status) {
                                     case 'CONFIRMED':
-                                        bgColor = '#3B82F6'; // Green for confirmed
+                                        bgColor = '#3B82F6'; // Green for CONFIRMED
                                         break;
                                     case 'PENDING':
-                                        bgColor = '#6B7280'; // Gray for archived
+                                        bgColor = '#6B7280'; // Gray for PENDING
                                         break;
                                     case 'CANCELLED':
-                                        bgColor = '#F59E0B'; // Yellow for pending
+                                        bgColor = '#F59E0B'; // Yellow for CANCELLED
                                         break;
                                     case 'REJECTED':
-                                        bgColor = '#EF4444'; // Red for cancelled
+                                        bgColor = '#EF4444'; // Red for REJECTED
                                         break;
                                     case 'COMPLETED':
                                         bgColor = '#10B981'; // Green for Completed

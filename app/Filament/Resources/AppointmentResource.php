@@ -107,6 +107,11 @@ class AppointmentResource extends Resource
                                     ->minDate(fn($get) => $get('id') === null ? today()->addDay() : null) // Ensure booking starts from tomorrow only on create forms
                                     ->default($selectedDate) // Set the default date if available in the query
                                     ->afterStateUpdated(fn($state, callable $get, callable $set) => $set('time_id', null))
+                                    ->afterStateHydrated(function ($state, callable $set, callable $get) {
+                                        if ($state && $get('id') === null) {
+                                            $set('time_id', null);
+                                        }
+                                    })
                                     ->disabled(fn(string $operation) => in_array($operation, ['edit']) || $selectedDate !== null)
                                     ->disabledDates(function () use ($specificClosedDates, $repeatClosedDates) {
                                         // Get weekends and specific closed dates

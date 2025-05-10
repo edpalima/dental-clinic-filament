@@ -7,7 +7,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-center align-items-center">
-                    <img src="{{ URL::to('assets/img/logo.png') }}" alt="Logo">
+                    <img src="{{ URL::to('assets/img/logo.jpg') }}" style="max-width: 200px" alt="Logo">
                 </div>
             </div>
             <div class="card-body">
