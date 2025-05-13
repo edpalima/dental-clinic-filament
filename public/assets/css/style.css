@@ -551,7 +551,7 @@ h6 {
   border-radius: 50px;
   opacity: 0.6;
   transition: 0.3s;
-
+  color: #ffc10777;
 }
 
 #hero .carousel-indicators li.active {

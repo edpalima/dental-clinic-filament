@@ -29,7 +29,7 @@ class PatientsChart extends ChartWidget
                 [
                     'label' => 'Appointments',
                     'data' => array_values($data),
-                    'backgroundColor' => ['#a4abb0c0', '#0dcaf0', '#ffc107', '#dc3545', '#198754'],
+                    'backgroundColor' => ['#a4abb0c0', '#1bc4e66d', '#ffc10777', '#dc354669', '#19875465'],
                 ]
             ],
             'labels' => array_keys($data)
