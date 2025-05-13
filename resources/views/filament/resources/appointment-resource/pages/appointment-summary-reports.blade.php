@@ -20,8 +20,8 @@
 
                 <!-- Buttons -->
                 <div class="flex gap-2">
-                    <x-filament::button type="submit">Show Reports</x-filament::button>
-                    <x-filament::button wire:click="printPdf">Print PDF</x-filament::button>
+                    <x-filament::button type="submit">Generate Reports</x-filament::button>
+                    <x-filament::button wire:click="printPdf">Download Reports</x-filament::button>
                 </div>
             </div>
         </form>
