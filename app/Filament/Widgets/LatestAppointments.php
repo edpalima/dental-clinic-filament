@@ -92,7 +92,8 @@ class LatestAppointments extends BaseWidget
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]);
+            ])
+            ->recordUrl(fn ($record) => AppointmentResource::getUrl('view', ['record' => $record]));
     }
 
     public static function canView(): bool
