@@ -242,8 +242,15 @@ class AppointmentResource extends Resource
                                             ->unique()
                                             ->toArray();
 
-                                        // Filter out procedures that can't be combined
-                                        return array_diff_key($allProcedures, array_flip($cantCombineIds));
+                                        // Include the selected procedures in the options to prevent overwriting
+                                        $allowedProcedures = array_diff_key($allProcedures, array_flip($cantCombineIds));
+
+                                        // Merge the selected procedures back into the options to ensure they remain selectable
+                                        $selectedProcedures = Procedure::whereIn('id', $selectedProcedureIds)
+                                            ->pluck('name', 'id')
+                                            ->toArray();
+
+                                        return $selectedProcedures + $allowedProcedures;
                                     })
                                     ->multiple() // Allow multiple selection
                                     ->reactive()
