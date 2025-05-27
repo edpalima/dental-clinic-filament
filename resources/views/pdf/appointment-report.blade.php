@@ -86,7 +86,7 @@
 
     <div class="header">
         {{-- <img src="{{ url('assets/img/logo.png') }}" alt="Company Logo"> --}}
-        <img src="{{ public_path('assets/img/logo.png') }}" alt="Company Logo">
+        <img src="{{ public_path('assets/img/logo.jpg') }}" style="width: 100px" alt="Company Logo">
         <h1>{{ $companyName }}</h1>
         <p>{{ $companyAddress }}</p>
         <p>Contact: {{ $companyContact }}</p>

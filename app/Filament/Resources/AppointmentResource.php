@@ -222,6 +222,7 @@ class AppointmentResource extends Resource
                                 Forms\Components\Select::make('procedures')
                                     ->label('Procedure(s)')
                                     ->multiple() // Allow multiple selection
+                                    ->live()
                                     ->reactive()
                                     ->options(function (callable $get) {
                                         $selectedProcedures = $get('procedures'); // Get currently selected procedures

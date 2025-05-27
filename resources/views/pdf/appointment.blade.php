@@ -252,7 +252,7 @@
             {{-- Loop through all items associated with the appointment --}}
             @foreach ($appointment->items as $item)
                 <tr>
-                    <td>{{ $item->tooth_number }}</td>
+                    <td>{{ is_array($item->tooth_number) ? implode(', ', $item->tooth_number) : $item->tooth_number }}</td>
                     <td>{{ $item->procedure->name }}</td>
                     <td class="bold">P{{ number_format($item->amount, 2) }}</td>
                 </tr>

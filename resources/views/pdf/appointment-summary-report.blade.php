@@ -100,7 +100,7 @@
     <div class="container">
         <!-- Header with logo and company info -->
         <div class="header">
-            <img src="{{ public_path('assets/img/logo.png') }}" alt="Company Logo">
+            <img src="{{ public_path('assets/img/logo.jpg') }}" alt="Company Logo">
             <h1>{{ $companyName }}</h1>
             <p>{{ $companyAddress }}</p>
             <p>Contact: {{ $companyContact }}</p>
