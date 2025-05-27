@@ -222,7 +222,29 @@ class AppointmentResource extends Resource
                                 // Procedure Multiple Selection
                                 Forms\Components\Select::make('procedures')
                                     ->label('Procedure(s)')
-                                    ->options(fn() => Procedure::pluck('name', 'id')->toArray())
+                                    ->options(function ($get) {
+                                        // Get the currently selected procedure IDs
+                                        $selectedProcedureIds = $get('procedures') ?? [];
+
+                                        // Get all procedures
+                                        $allProcedures = Procedure::pluck('name', 'id')->toArray();
+
+                                        // If no procedures are selected, return all procedures
+                                        if (empty($selectedProcedureIds)) {
+                                            return $allProcedures;
+                                        }
+
+                                        // Get all procedure IDs that can't be combined with the selected procedures
+                                        $cantCombineIds = Procedure::whereIn('id', $selectedProcedureIds)
+                                            ->pluck('cant_combine')
+                                            ->flatten()
+                                            ->filter()
+                                            ->unique()
+                                            ->toArray();
+
+                                        // Filter out procedures that can't be combined
+                                        return array_diff_key($allProcedures, array_flip($cantCombineIds));
+                                    })
                                     ->multiple() // Allow multiple selection
                                     ->reactive()
                                     ->required(),
