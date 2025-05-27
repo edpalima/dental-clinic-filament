@@ -221,31 +221,40 @@ class AppointmentResource extends Resource
                                 // Procedure Multiple Selection
                                 Forms\Components\Select::make('procedures')
                                     ->label('Procedure(s)')
-                                    ->multiple() // Allow multiple selection
+                                    ->multiple()
                                     ->live()
                                     ->reactive()
                                     ->options(function (callable $get) {
-                                        $selectedProcedures = $get('procedures'); // Get currently selected procedures
+                                        $selectedProcedures = (array) ($get('procedures') ?? []);
 
-                                        $procedures = Procedure::orderBy('name')->get(); // Fetch all procedures
+                                        // Optimize query with specific columns
+                                        $procedures = Procedure::orderBy('name')
+                                            ->select('id', 'name', 'cant_combine')
+                                            ->get();
 
-                                        return $procedures->filter(function ($procedure) use ($selectedProcedures) {
-                                            if (empty($selectedProcedures)) {
-                                                return true; // Allow all if nothing is selected
-                                            }
+                                        // Check if any selected procedure has cant_combine = true
+                                        $hasCantCombine = !empty($selectedProcedures) && Procedure::whereIn('id', $selectedProcedures)
+                                            ->where('cant_combine', true)
+                                            ->exists();
 
-                                            if (in_array($procedure->id, $selectedProcedures)) {
-                                                return true; // Keep already selected procedures
-                                            }
+                                        return $procedures
+                                            ->filter(function ($procedure) use ($selectedProcedures, $hasCantCombine) {
+                                                // Always include selected procedures
+                                                if (in_array((string) $procedure->id, $selectedProcedures, true)) {
+                                                    return true;
+                                                }
 
-                                            if ($procedure->cant_combine) {
-                                                // If cant_combine is true, only allow it to be selected if it's the only one selected
-                                                return count($selectedProcedures) === 0;
-                                            }
+                                                // If a cant_combine procedure is selected, exclude all others
+                                                if ($hasCantCombine) {
+                                                    return false;
+                                                }
 
-                                            // Allow other procedures if no cant_combine procedure is selected
-                                            return !Procedure::whereIn('id', $selectedProcedures)->where('cant_combine', true)->exists();
-                                        })->pluck('name', 'id');
+                                                // If this procedure has cant_combine, only allow if nothing is selected
+                                                return !$procedure->cant_combine || empty($selectedProcedures);
+                                            })
+                                            ->pluck('name', 'id')
+                                            ->mapWithKeys(fn($name, $id) => [(string) $id => $name])
+                                            ->toArray();
                                     })
                                     ->required(),
 
