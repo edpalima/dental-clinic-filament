@@ -220,44 +220,11 @@ class AppointmentResource extends Resource
                                     ->required(),
 
                                 // Procedure Multiple Selection
-                                TagsInput::make('procedures')
+                                Forms\Components\Select::make('procedures')
                                     ->label('Procedure(s)')
-                                    ->live()
+                                    ->options(fn() => Procedure::pluck('name', 'id')->toArray())
+                                    ->multiple() // Allow multiple selection
                                     ->reactive()
-                                    ->suggestions(function (callable $get) {
-                                        $selectedProcedures = (array) ($get('procedures') ?? []);
-                                        \Log::info('TagsInput Selected Procedures:', ['selected' => $selectedProcedures, 'types' => array_map('gettype', $selectedProcedures)]);
-
-                                        $procedures = Procedure::orderBy('name')
-                                            ->select('id', 'name', 'cant_combine')
-                                            ->get();
-                                        \Log::info('TagsInput All Procedures:', ['procedures' => $procedures->toArray()]);
-
-                                        $hasCantCombine = !empty($selectedProcedures) && Procedure::whereIn('id', $selectedProcedures)
-                                            ->where('cant_combine', true)
-                                            ->exists();
-                                        \Log::info('TagsInput Has Cant Combine:', ['hasCantCombine' => $hasCantCombine]);
-
-                                        return $procedures
-                                            ->filter(function ($procedure) use ($selectedProcedures, $hasCantCombine) {
-                                                $procedureId = (string) $procedure->id;
-                                                $isSelected = in_array($procedureId, $selectedProcedures, true);
-                                                $canInclude = $isSelected || (!$hasCantCombine && (!$procedure->cant_combine || empty($selectedProcedures)));
-
-                                                \Log::info('TagsInput Procedure Filter:', [
-                                                    'id' => $procedureId,
-                                                    'name' => $procedure->name,
-                                                    'cant_combine' => $procedure->cant_combine,
-                                                    'isSelected' => $isSelected,
-                                                    'canInclude' => $canInclude,
-                                                ]);
-
-                                                return $canInclude;
-                                            })
-                                            ->pluck('name', 'id')
-                                            ->mapWithKeys(fn($name, $id) => [(string) $id => $name])
-                                            ->toArray();
-                                    })
                                     ->required(),
 
                                 $user->role != User::ROLE_PATIENT
