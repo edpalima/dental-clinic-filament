@@ -21,6 +21,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -219,38 +220,39 @@ class AppointmentResource extends Resource
                                     ->required(),
 
                                 // Procedure Multiple Selection
-                                Forms\Components\Select::make('procedures')
+                                TagsInput::make('procedures')
                                     ->label('Procedure(s)')
-                                    ->multiple()
                                     ->live()
                                     ->reactive()
-                                    ->options(function (callable $get) {
+                                    ->suggestions(function (callable $get) {
                                         $selectedProcedures = (array) ($get('procedures') ?? []);
+                                        \Log::info('TagsInput Selected Procedures:', ['selected' => $selectedProcedures, 'types' => array_map('gettype', $selectedProcedures)]);
 
-                                        // Optimize query with specific columns
                                         $procedures = Procedure::orderBy('name')
                                             ->select('id', 'name', 'cant_combine')
                                             ->get();
+                                        \Log::info('TagsInput All Procedures:', ['procedures' => $procedures->toArray()]);
 
-                                        // Check if any selected procedure has cant_combine = true
                                         $hasCantCombine = !empty($selectedProcedures) && Procedure::whereIn('id', $selectedProcedures)
                                             ->where('cant_combine', true)
                                             ->exists();
+                                        \Log::info('TagsInput Has Cant Combine:', ['hasCantCombine' => $hasCantCombine]);
 
                                         return $procedures
                                             ->filter(function ($procedure) use ($selectedProcedures, $hasCantCombine) {
-                                                // Always include selected procedures
-                                                if (in_array((string) $procedure->id, $selectedProcedures, true)) {
-                                                    return true;
-                                                }
+                                                $procedureId = (string) $procedure->id;
+                                                $isSelected = in_array($procedureId, $selectedProcedures, true);
+                                                $canInclude = $isSelected || (!$hasCantCombine && (!$procedure->cant_combine || empty($selectedProcedures)));
 
-                                                // If a cant_combine procedure is selected, exclude all others
-                                                if ($hasCantCombine) {
-                                                    return false;
-                                                }
+                                                \Log::info('TagsInput Procedure Filter:', [
+                                                    'id' => $procedureId,
+                                                    'name' => $procedure->name,
+                                                    'cant_combine' => $procedure->cant_combine,
+                                                    'isSelected' => $isSelected,
+                                                    'canInclude' => $canInclude,
+                                                ]);
 
-                                                // If this procedure has cant_combine, only allow if nothing is selected
-                                                return !$procedure->cant_combine || empty($selectedProcedures);
+                                                return $canInclude;
                                             })
                                             ->pluck('name', 'id')
                                             ->mapWithKeys(fn($name, $id) => [(string) $id => $name])
