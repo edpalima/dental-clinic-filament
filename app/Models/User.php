@@ -79,6 +79,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
         return $this->hasOne(Patient::class, 'email', 'email');
     }
 
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class, 'email', 'email');
+    }
+
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->photo ? asset('storage/' . $this->photo) : null;

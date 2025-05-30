@@ -19,13 +19,17 @@ class LatestAppointments extends BaseWidget
 
     public function table(Table $table): Table
     {
+        $query = AppointmentResource::getEloquentQuery();
+
+        if (Auth::user()->isDoctor() && Auth::user()->doctor->id) {
+            $query->where('doctor_id', Auth::user()->doctor->id);
+        }
+
         return $table
-            ->query(
-                AppointmentResource::getEloquentQuery()
-            )
+            ->query($query)
             ->defaultPaginationPageOption(5)
             ->defaultSort('created_at', 'desc')
-            ->columns([
+            ->columns(array_filter([
                 Tables\Columns\TextColumn::make('patient.fullname')
                     ->searchable(query: function (Builder $query, string $search) {
                         $query->orWhereHas('patient', function (Builder $query) use ($search) {
@@ -37,6 +41,7 @@ class LatestAppointments extends BaseWidget
                             $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
                         });
                     }),
+
                 Tables\Columns\TextColumn::make('doctor.fullname')
                     ->searchable(query: function (Builder $query, string $search) {
                         $query->orWhereHas('doctor', function (Builder $query) use ($search) {
@@ -48,14 +53,12 @@ class LatestAppointments extends BaseWidget
                             $query->orderByRaw("CONCAT(first_name, ' ', last_name) $direction");
                         });
                     }),
+
                 Tables\Columns\TextColumn::make('procedures')
                     ->getStateUsing(function ($record) {
                         if (is_array($record->procedures)) {
-                            // Get procedure names and join them with a comma
                             $procedureNames = Procedure::whereIn('id', $record->procedures)->pluck('name')->toArray();
                             $namesString = implode(', ', $procedureNames);
-
-                            // Truncate to 20 characters
                             return strlen($namesString) > 15 ? substr($namesString, 0, 15) . '...' : $namesString;
                         }
                         return '';
@@ -63,18 +66,20 @@ class LatestAppointments extends BaseWidget
                     ->label('Procedures')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_amount')
+
+                // ✅ Conditionally include Amount column
+                !Auth::user()->isDoctor() ? Tables\Columns\TextColumn::make('total_amount')
                     ->label("Amount")
                     ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(fn($state) => number_format($state, 2))
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable() : null,
+
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('time.name'),
+
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn(string $state): string => match ($state) {
@@ -84,16 +89,18 @@ class LatestAppointments extends BaseWidget
                         'REJECTED' => 'danger',
                         'COMPLETED' => 'success',
                     }),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->recordUrl(fn ($record) => AppointmentResource::getUrl('view', ['record' => $record]));
+            ]))
+            ->recordUrl(fn($record) => AppointmentResource::getUrl('view', ['record' => $record]));
     }
 
     public static function canView(): bool

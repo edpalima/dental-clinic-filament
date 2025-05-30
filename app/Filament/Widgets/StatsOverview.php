@@ -45,7 +45,7 @@ class StatsOverview extends BaseWidget
 
     public static function canView(): bool
     {
-        if (Auth::user()->isAdmin() || Auth::user()->isDoctor()) {
+        if (Auth::user()->isAdmin()) {
             return true;
         }
 
