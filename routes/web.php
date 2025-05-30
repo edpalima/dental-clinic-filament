@@ -31,7 +31,11 @@ Route::get('/patient-registration', function () {
 })->name('register');
 
 Route::get('/consent-agreement', function () {
-    return view('privacy-policy.index');
+    return view('agreement.privacy-policy');
+});
+
+Route::get('/terms-and-conditions', function () {
+    return view('agreement.terms-and-conditions');
 });
 
 Route::get(
