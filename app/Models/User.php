@@ -29,6 +29,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     const ROLE_ADMIN = 'ADMIN';
     const ROLE_DOCTOR = 'DOCTOR';
     const ROLE_PATIENT = 'PATIENT';
+    const ROLE_STAFF = 'STAFF';
     /**
      * The attributes that are mass assignable.
      *
@@ -53,6 +54,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, 
     public function isPatient()
     {
         return $this->role === self::ROLE_PATIENT;
+    }
+
+    public function isStaff()
+    {
+        return $this->role === self::ROLE_STAFF;
     }
 
     /**

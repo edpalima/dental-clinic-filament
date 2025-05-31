@@ -42,14 +42,40 @@
 
 <body>
     <div class="container">
-        <h1>Appointment Confirmation</h1>
+        <h1>Appointment {{ strtoupper($data['status']) }}</h1>
+
+        <p><strong>Appointment No:</strong> #{{ str_pad($data['id'], 5, '0', STR_PAD_LEFT) }}</p>
+
         <p>Dear Customer,</p>
-        <p>This email confirms your upcoming appointment on <strong>{{ $data['date'] }}</strong>,
-            <strong>{{ $data['dayOfWeek'] }}</strong> at <strong>{{ $data['time'] }}</strong>.
+
+        <p>
+            This email is to inform you that your appointment on
+            <strong>{{ $data['date'] }}</strong>,
+            <strong>{{ $data['dayOfWeek'] }}</strong> at
+            <strong>{{ $data['time'] }}</strong> has been
+            <strong style="text-transform: uppercase;">{{ $data['status'] }}</strong>.
         </p>
-        <p>You are scheduled for <strong>{{ $data['procedures'] ?? 'your procedure' }}</strong>.</p>
-        <p>The appointment will take place at Almoro Santiago Dental Clinic.</p>
+
+        <p>
+            You were scheduled for <strong>{{ $data['procedures'] }}</strong>.
+        </p>
+
+        <p>
+            The appointment location is Almoro Santiago Dental Clinic.
+        </p>
+
+        @if (strtolower($data['status']) === 'cancelled')
+        <p style="color: red;"><strong>Please contact us to reschedule your appointment.</strong></p>
+        @else
         <p>We appreciate you and look forward to providing you with excellent service.</p>
+        @endif
+
+        <p>
+            Please review our
+            <a href="{{ url('/consent-agreement') }}" target="_blank">Privacy Policy</a> and
+            <a href="{{ url('/terms-and-conditions') }}" target="_blank">Terms & Conditions</a>.
+        </p>
+
         <p>Thank you!</p>
 
         <div class="footer">

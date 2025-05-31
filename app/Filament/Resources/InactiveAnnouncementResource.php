@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
 class InactiveAnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;
-    protected static ?string $navigationIcon = 'heroicon-o-x-mark';
+    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
     protected static ?string $slug = 'archived-announcement';
     protected static ?string $navigationLabel = 'Archived';
     protected static ?string $navigationGroup = 'Announcements';
@@ -132,7 +132,7 @@ class InactiveAnnouncementResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return Auth::user()->role === User::ROLE_ADMIN;
+        return Auth::user()->role === User::ROLE_ADMIN || Auth::user()->role === User::ROLE_STAFF;
     }
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder

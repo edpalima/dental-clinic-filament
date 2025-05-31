@@ -25,6 +25,15 @@ class UsersTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
+            [
+                'name' => 'Staff User',
+                'email' => 'staff@gmail.com',
+                'password' => Hash::make('password'),
+                'role' => 'STAFF',
+                'email_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
         ]);
 
         $times = [

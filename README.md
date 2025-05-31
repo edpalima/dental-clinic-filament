@@ -92,6 +92,10 @@ Role: Doctor
 username: doctor@gmail.com
 password: password
 
+Role: Staff
+username: staff@gmail.com
+password: password
+
 ## Reset Database
 `php artisan migrate:refresh`
 `php artisan db:seed`

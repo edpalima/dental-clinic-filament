@@ -57,10 +57,40 @@ class UserResource extends Resource
                         ->visible(fn($livewire) => $livewire instanceof CreateUser) // Show only on create
                         ->rule(Password::default())
                         ->maxLength(255),
-                    TextInput::make('role')
-                        ->default('ADMIN')
-                        ->password()
-                        ->visible(false),
+                    Forms\Components\Select::make('role')
+                        ->required()
+                        ->options(function ($livewire) {
+                            if ($livewire instanceof CreateUser) {
+                                return [
+                                    'ADMIN' => 'ADMIN',
+                                    'STAFF' => 'STAFF',
+                                ];
+                            }
+
+                            if ($livewire instanceof EditUser) {
+                                $currentRole = $livewire->record->role ?? null;
+
+                                if ($currentRole === 'CUSTOMER') {
+                                    return [
+                                        'ADMIN' => 'ADMIN',
+                                        'STAFF' => 'STAFF',
+                                        'CUSTOMER' => 'CUSTOMER',
+                                    ];
+                                } else {
+                                    return [
+                                        'ADMIN' => 'ADMIN',
+                                        'STAFF' => 'STAFF',
+                                    ];
+                                }
+                            }
+
+                            return [];
+                        })
+                        ->disabled(
+                            fn($livewire) =>
+                            $livewire instanceof EditUser &&
+                                $livewire->record->role === 'PATIENT'
+                        ),
                 ]),
 
                 Section::make('User New Password')->schema([

@@ -132,7 +132,7 @@ class AnnouncementResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return Auth::user()->role === User::ROLE_ADMIN;
+        return Auth::user()->role === User::ROLE_ADMIN || Auth::user()->role === User::ROLE_STAFF;
     }
 
     // public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
