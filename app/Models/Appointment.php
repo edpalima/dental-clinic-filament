@@ -18,6 +18,7 @@ class Appointment extends Model
         'procedures',
         'date',
         'time_id',
+        'time_end',
         'notes',
         'cancelled_reason',
         'payment_options',

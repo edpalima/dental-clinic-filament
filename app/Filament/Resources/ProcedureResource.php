@@ -46,7 +46,16 @@ class ProcedureResource extends Resource
                     ->options(fn() => Procedure::pluck('name', 'id')->toArray())
                     ->multiple()
                     ->placeholder('Select')
-                    ->reactive()
+                    ->reactive(),
+
+                Forms\Components\Select::make('duration')
+                    ->required()
+                    ->options([
+                        1 => '1 hour',
+                        2 => '2 hours',
+                        3 => '3 hours',
+                    ])
+                    ->placeholder('Select procedure time'),
             ]);
     }
 
@@ -62,9 +71,12 @@ class ProcedureResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->extraAttributes([
-                        'style' => 'max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
+                        'style' => 'max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;',
                     ])
                     ->searchable(),
+                Tables\Columns\TextColumn::make('duration')
+                    ->formatStateUsing(fn ($state) => $state . ' hour' . ($state > 1 ? 's' : ''))
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('cost')
                     ->formatStateUsing(fn($state) => number_format($state, 2))
                     ->sortable(),

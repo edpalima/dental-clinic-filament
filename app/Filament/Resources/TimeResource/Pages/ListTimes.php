@@ -16,4 +16,9 @@ class ListTimes extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    public function getTitle(): string
+    {
+        return 'Available Time';
+    }
 }

@@ -41,7 +41,7 @@ class UsersTableSeeder extends Seeder
         $sort = 1;
         foreach ($times as $start => $end) {
             Time::create([
-                'name' => "{$start} to {$end}",
+                'name' => "{$start}",
                 'time_start' => date('H:i', strtotime($start)),
                 'time_end' => date('H:i', strtotime($end)),
                 'sort' => $sort,

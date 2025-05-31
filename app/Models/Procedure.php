@@ -14,7 +14,8 @@ class Procedure extends Model
         'description',
         'cost',
         'short_description',
-        'cant_combine'
+        'cant_combine',
+        'duration'
     ];
 
     protected $casts = [

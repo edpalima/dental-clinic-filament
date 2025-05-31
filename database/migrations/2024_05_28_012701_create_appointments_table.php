@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('procedures')->nullable();
             $table->json('procedures_data')->nullable();
             $table->foreignId('time_id')->constrained()->onDelete('cascade');
+            $table->time('time_end')->nullable();
             $table->date('date');
             $table->text('notes')->nullable();
             $table->text('cancelled_reason')->nullable();

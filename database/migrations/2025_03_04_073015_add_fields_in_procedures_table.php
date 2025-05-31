@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('procedures', function (Blueprint $table) {
             $table->string('short_description')->nullable();
             $table->json('cant_combine')->nullable(); // Store selected procedure IDs as JSON
+            $table->integer('duration')->default(1);
         });
     }
 

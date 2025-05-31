@@ -35,8 +35,8 @@ class TimeResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TimePicker::make('time_start')
                     ->required(),
-                Forms\Components\TimePicker::make('time_end')
-                    ->required(),
+                // Forms\Components\TimePicker::make('time_end')
+                //     ->required(),
                 Forms\Components\TextInput::make('sort')
                     ->required()
                     ->numeric()
@@ -51,9 +51,10 @@ class TimeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Time Label')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('time_start'),
-                Tables\Columns\TextColumn::make('time_end'),
+                // Tables\Columns\TextColumn::make('time_end'),
                 Tables\Columns\TextColumn::make('sort')
                     ->numeric()
                     ->sortable(),
@@ -103,5 +104,10 @@ class TimeResource extends Resource
     public static function canAccess(): bool
     {
         return Auth::user()->isAdmin();
+    }
+
+    public static function getTitle(): string
+    {
+        return 'Available Time';
     }
 }

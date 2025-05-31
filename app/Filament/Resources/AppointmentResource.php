@@ -94,12 +94,37 @@ class AppointmentResource extends Resource
         // Get repeat closed dates
         $repeatClosedDates = self::getRepeatClosedDates($repeatClosedDays);
 
+        // Define the helper closure inside the form method
+        $updateTimeEnd = function (callable $get, callable $set) {
+            $procedureIds = $get('procedures') ?? [];
+            $timeId = $get('time_id');
+
+            if (!$procedureIds || !$timeId) {
+                $set('time_end', null);
+                return;
+            }
+
+            $startTime = \App\Models\Time::find($timeId);
+            if (!$startTime || !$startTime->time_start) {
+                $set('time_end', null);
+                return;
+            }
+
+            $totalHours = \App\Models\Procedure::whereIn('id', $procedureIds)->sum('duration');
+
+            $startCarbon = \Carbon\Carbon::createFromFormat('H:i:s', $startTime->time_start);
+            $endCarbon = $startCarbon->copy()->addHours($totalHours);
+
+            $set('time_end', $endCarbon->format('H:i'));
+        };
+
         return $form
             ->schema([
                 Section::make()
                     ->schema([
                         // Details Section
                         Fieldset::make('SCHEDULE')
+                            ->columns(3)
                             ->schema([
                                 Forms\Components\DatePicker::make('date')
                                     ->required()
@@ -115,67 +140,59 @@ class AppointmentResource extends Resource
                                     })
                                     ->disabled(fn(string $operation) => in_array($operation, ['edit']) || $selectedDate !== null)
                                     ->disabledDates(function () use ($specificClosedDates, $repeatClosedDates) {
-                                        // Get weekends and specific closed dates
-
-                                        // Merge all closed dates
+                                        // Merge known closed dates
                                         $disabledDates = array_merge($specificClosedDates, $repeatClosedDates);
 
-                                        return $disabledDates;
+                                        // Add days where no time is available (check next 60 days from today)
+                                        $datesToCheck = collect(range(0, 60))
+                                            ->map(fn($i) => now()->addDays($i)->toDateString());
+
+                                        $fullyUnavailableDates = $datesToCheck->filter(function ($date) {
+                                            return \App\Models\Time::all()->every(fn($time) => !$time->isAvailableOnDate($date));
+                                        })->values()->all();
+
+                                        return array_merge($disabledDates, $fullyUnavailableDates);
                                     }),
 
                                 Forms\Components\Select::make('time_id')
-                                    ->label('Appointment Time')
+                                    ->label('Start Time')
                                     ->options(function (callable $get) {
                                         $selectedDate = $get('date');
                                         if (!$selectedDate) {
                                             return [];
                                         }
 
-                                        // Get all booked time slots for the selected date
-                                        $bookedTimeIds = Appointment::withoutGlobalScope('userRoleFilter')
-                                            ->whereDate('date', $selectedDate)
-                                            ->pluck('time_id')
-                                            ->toArray();
+                                        // Return all time slot names with availability info
+                                        $getTime = Time::all()->mapWithKeys(function ($time) use ($selectedDate, $get) {
+                                            $label = $time->name;
 
-                                        // Get all available time slots
-                                        $allTimeSlots = Time::pluck('name', 'id')->toArray();
-
-                                        // Add labels for booked time slots
-                                        if ($get('id') == null) {
-                                            foreach ($allTimeSlots as $id => $name) {
-                                                if (in_array($id, $bookedTimeIds)) {
-                                                    $allTimeSlots[$id] = $name . ' (Not Available)'; // Add "Not Available" label
+                                            if ($get('id') == null) {
+                                                if (!$time->isAvailableOnDate($selectedDate)) {
+                                                    $label .= ' (Not Available)';
                                                 }
                                             }
-                                        }
 
-                                        return $allTimeSlots;
+
+                                            return [$time->id => $label];
+                                        })->toArray();
+
+                                        return $getTime;
                                     })
                                     ->disableOptionWhen(function ($value, callable $get) {
                                         $selectedDate = $get('date');
-                                        $currentAppointmentId = $get('id'); // Assuming 'id' is the appointment ID
-
-                                        if (!$selectedDate) {
+                                        if (!$selectedDate || !$value) {
                                             return false;
                                         }
 
-                                        // Get all booked time slots for the selected date, excluding the current appointment's time
-                                        $bookedTimeIds = Appointment::withoutGlobalScope('userRoleFilter')
-                                            ->whereDate('date', $selectedDate)
-                                            ->when($currentAppointmentId, function ($query, $id) {
-                                                return $query->where('id', '!=', $id);
-                                            })
-                                            ->pluck('time_id')
-                                            ->toArray();
-
-                                        // Disable the option if it is in the booked time slots
-                                        return in_array($value, $bookedTimeIds);
+                                        $time = \App\Models\Time::find($value);
+                                        return $time && !$time->isAvailableOnDate($selectedDate);
                                     })
                                     ->hidden(fn(callable $get) => !$get('date'))
                                     ->disabled(fn($get) => $get('id') !== null) // Disable if editing
                                     ->required(fn(callable $get) => $get('date') !== null)
                                     ->extraInputAttributes(['class' => 'select-time-disable'])
                                     ->validationAttribute('appointment time')
+                                    ->reactive()
                                     ->rules([
                                         fn(callable $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                                             $selectedDate = $get('date');
@@ -200,6 +217,15 @@ class AppointmentResource extends Resource
                                             }
                                         },
                                     ])
+                                    ->afterStateUpdated(fn($state, $get, $set) => $updateTimeEnd($get, $set)),
+
+                                Forms\Components\TimePicker::make('time_end')
+                                    ->label('End Time')
+                                    ->hidden(fn(callable $get) => !$get('date'))
+                                    ->required()
+                                    ->disabled()
+                                    ->reactive()
+                                    ->dehydrated(),
                             ]),
 
                         // Assign Section
@@ -252,9 +278,13 @@ class AppointmentResource extends Resource
 
                                         return $selectedProcedures + $allowedProcedures;
                                     })
-                                    ->multiple() // Allow multiple selection
+                                    ->afterStateUpdated(fn($state, $get, $set) => $updateTimeEnd($get, $set))
+                                    ->multiple()
                                     ->reactive()
-                                    ->required(),
+                                    ->required()
+                                    ->disabled(fn($get) => $get('id') !== null)
+                                // ->disabled(fn(callable $get) => !$get('time_id'))
+                                ,
 
                                 $user->role != User::ROLE_PATIENT
                                     ? Forms\Components\Select::make('status')
@@ -395,7 +425,7 @@ class AppointmentResource extends Resource
                             ),
 
                         Forms\Components\Checkbox::make('agreement_accepted')
-                            ->label(fn() => new HtmlString('I accept the <a href="/consent-agreement" target="_blank" style="color:red">Consent Agreement</a>'))
+                            ->label(fn() => new HtmlString('I accept the <a href="/consent-agreement" target="_blank" style="color:red">Consent Agreement</a> and <a href="/terms-and-conditions" target="_blank" style="color:red">Terms and Conditions</a>'))
                             ->required()
                             ->disabled(fn($get) => $get('id') !== null) // Disable if editing
                             ->columnSpanFull(),

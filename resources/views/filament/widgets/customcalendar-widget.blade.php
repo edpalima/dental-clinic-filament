@@ -94,6 +94,31 @@
                 right: 4px;
                 z-index: -10;
             }
+
+            .full-date {
+                background-color: #fef2f2 !important;
+                /* subtle red tint (tailwind rose-50) */
+                color: inherit !important;
+                border: 1px dashed #fca5a5;
+                /* light red border */
+                position: relative;
+
+                z-index: -10;
+            }
+
+            .full-date::after {
+                content: "No Available Slot";
+                font-size: 10px;
+                color:rgb(253, 158, 15);
+                background-color: #fcdcdc;
+                /* pale red background */
+                padding: 2px 4px;
+                border-radius: 4px;
+                position: absolute;
+                bottom: 4px;
+                right: 4px;
+                z-index: -10;
+            }
         </style>
     @endpush
 
@@ -107,6 +132,8 @@
                 var selectedStatus = ''; // Default to all statuses
                 let specificClosedDates = [];
                 let repeatClosedDays = [];
+                let fullyUnavailableDates = [];
+
 
                 // Fetch closed days first
                 fetch('{{ route('calendar.closed-days') }}')
@@ -115,6 +142,11 @@
                         specificClosedDates = data.specificDates; // e.g. ['2025-04-15', '2025-04-16']
                         repeatClosedDays = data.repeatDays; // e.g. ['sunday', 'saturday']
                         initCalendar(); // Only initialize calendar after data is ready
+                    });
+                fetch('{{ route('calendar.unavailable-dates') }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        fullyUnavailableDates = data; // e.g. ['2025-06-01', '2025-06-03']
                     });
 
                 // Function to fetch events from the server
@@ -203,7 +235,8 @@
                             const selectedDate = info.dateStr;
                             const today = new Date().toISOString().split('T')[0];
 
-                            const isClosedSpecific = specificClosedDates.includes(selectedDate);
+                            const isClosedSpecific = specificClosedDates.includes(selectedDate); 
+                            const isFullSpecific = fullyUnavailableDates.includes(selectedDate);
                             const dayName = info.date.toLocaleString('en-US', {
                                 weekday: 'long'
                             }).toLowerCase();
@@ -217,6 +250,11 @@
                             // Block closed or past dates
                             if (isClosedSpecific || isRepeatClosed) {
                                 alert('This date is closed.');
+                                return;
+                            }
+
+                            if (isFullSpecific) {
+                                alert('No available time slot for this date');
                                 return;
                             }
 
@@ -248,9 +286,15 @@
                                     cell.classList.add('present-date');
                                 }
 
-                                if (specificClosedDates.includes(cellDate) || repeatClosedDays
-                                    .includes(
-                                        dayName)) {
+                                if (fullyUnavailableDates.includes(cellDate)) {
+                                    cell.classList.add('full-date');
+                                    cell.setAttribute('title', 'No available times');
+                                }
+
+                                if (
+                                    specificClosedDates.includes(cellDate) ||
+                                    repeatClosedDays.includes(dayName)
+                                ) {
                                     cell.classList.add('closed-date');
                                 }
                             });
@@ -266,10 +310,16 @@
                             const allCells = document.querySelectorAll('.fc-daygrid-day-frame');
                             allCells.forEach(function(cell) {
                                 const cellDate = cell.getAttribute('data-date');
+
                                 if (cellDate < today) {
                                     cell.classList.add('past-date'); // Add class for past dates
                                 } else if (cellDate === today) {
                                     cell.classList.add('present-date'); // Add class for today
+                                }
+
+                                if (fullyUnavailableDates.includes(cellDate)) {
+                                    cell.classList.add('full-date');
+                                    cell.setAttribute('title', 'No available times');
                                 }
 
                                 // Set color for specific date

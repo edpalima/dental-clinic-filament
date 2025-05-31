@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\ClosedDay;
+use App\Models\Time;
 use Illuminate\Http\Request;
 
 class AppointmentsController extends Controller
@@ -54,5 +55,24 @@ class AppointmentsController extends Controller
             'specificDates' => $specificDates,
             'repeatDays' => $repeatDays,
         ]);
+    }
+
+    public function getUnavailableDates(Request $request)
+    {
+        $dates = [];
+
+        for ($i = 0; $i < 60; $i++) {
+            $date = now()->addDays($i)->toDateString();
+
+            $available = Time::all()->filter(function ($time) use ($date) {
+                return $time->isAvailableOnDate($date);
+            });
+
+            if ($available->isEmpty()) {
+                $dates[] = $date;
+            }
+        }
+
+        return response()->json($dates);
     }
 }
