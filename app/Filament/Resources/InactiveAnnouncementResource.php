@@ -21,7 +21,7 @@ class InactiveAnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;
     protected static ?string $navigationIcon = 'heroicon-o-x-mark';
-    protected static ?string $slug = 'announcements/archived';
+    protected static ?string $slug = 'archived-announcement';
     protected static ?string $navigationLabel = 'Archived';
     protected static ?string $navigationGroup = 'Announcements';
 
@@ -64,10 +64,10 @@ class InactiveAnnouncementResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('description')
-                    ->sortable()
-                    ->searchable()
-                    ->limit(50),
+                // Tables\Columns\TextColumn::make('description')
+                //     ->sortable()
+                //     ->searchable()
+                //     ->limit(50),
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('Image')
                     ->square()
@@ -94,6 +94,17 @@ class InactiveAnnouncementResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('archived')
+                    ->label('Archived') // Set label for the action button
+                    ->icon('heroicon-o-archive-box-x-mark') // Optional: icon for the action
+                    ->requiresConfirmation()
+                    ->color('success')
+                    ->action(function (Announcement $record) {
+                        $record->update(['archived' => false]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirm Unarchive')
+                    ->tooltip('Unarchive'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -126,17 +137,11 @@ class InactiveAnnouncementResource extends Resource
 
     public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
-        $currentDateTime = Carbon::now();
-
-        return parent::getEloquentQuery()
-            ->where(function ($query) use ($currentDateTime) {
-                $query->where('start_date', '>', $currentDateTime)
-                    ->orWhere('end_date', '<', $currentDateTime)
-                    ->orWhere('is_active', false);
-            });
+        return parent::getEloquentQuery()->withoutGlobalScope('userRoleFilter')
+            ->where('archived', true);
     }
-    public static function getTitle(): string
 
+    public static function getTitle(): string
     {
         return 'Inactive Announcements';
     }

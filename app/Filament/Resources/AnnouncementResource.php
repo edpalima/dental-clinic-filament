@@ -20,9 +20,9 @@ use Illuminate\Support\Facades\Auth;
 class AnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;
-    protected static ?string $navigationIcon = 'heroicon-o-check';
-    protected static ?string $slug = 'announcements/active';
-    protected static ?string $navigationLabel = 'Active';
+    protected static ?string $navigationIcon = 'heroicon-o-megaphone';
+    // protected static ?string $slug = 'announcements/active';
+    // protected static ?string $navigationLabel = 'List';
     protected static ?string $navigationGroup = 'Announcements';
 
     public static function form(Form $form): Form
@@ -64,10 +64,10 @@ class AnnouncementResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('description')
-                    ->sortable()
-                    ->searchable()
-                    ->limit(50),
+                // Tables\Columns\TextColumn::make('description')
+                //     ->sortable()
+                //     ->searchable()
+                //     ->limit(50),
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('Image')
                     ->square()
@@ -94,6 +94,17 @@ class AnnouncementResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('archived')
+                    ->label('Archived') // Set label for the action button
+                    ->icon('heroicon-o-archive-box') // Optional: icon for the action
+                    ->requiresConfirmation()
+                    ->color('danger')
+                    ->action(function (Announcement $record) {
+                        $record->update(['archived' => true]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirm Archive')
+                    ->tooltip('Archived'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -124,13 +135,13 @@ class AnnouncementResource extends Resource
         return Auth::user()->role === User::ROLE_ADMIN;
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
-    {
-        $currentDateTime = Carbon::now();
+    // public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    // {
+    //     $currentDateTime = Carbon::now();
 
-        return parent::getEloquentQuery()
-            ->where('start_date', '<=', $currentDateTime)
-            ->where('end_date', '>=', $currentDateTime)
-            ->where('is_active', true);
-    }
+    //     return parent::getEloquentQuery()
+    //         ->where('start_date', '<=', $currentDateTime)
+    //         ->where('end_date', '>=', $currentDateTime)
+    //         ->where('is_active', true);
+    // }
 }

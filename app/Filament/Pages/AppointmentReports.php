@@ -23,6 +23,7 @@ class AppointmentReports extends Page
     public ?string $status = 'ALL';
     public ?int $doctorId = null;
     public ?int $patientId = null;
+    public ?int $timeId = null;
     public $appointments;
     public string $companyName = 'Almoro Santiago Dental Clinic';
     public string $companyAddress = 'Canlalay Biñan City of Laguna.';
@@ -49,10 +50,20 @@ class AppointmentReports extends Page
             $query->where('date', '<=', $this->endDate);
         }
 
+        // Date range
+        if ($this->startDate && $this->endDate) {
+            $query->whereBetween('date', [$this->startDate, $this->endDate]);
+        } elseif ($this->startDate) {
+            $query->where('date', '>=', $this->startDate);
+        } elseif ($this->endDate) {
+            $query->where('date', '<=', $this->endDate);
+        }
+
         // Other filters
         $query->when($this->status && $this->status !== 'ALL', fn($q) => $q->where('status', $this->status));
         $query->when($this->doctorId, fn($q) => $q->where('doctor_id', $this->doctorId));
         $query->when($this->patientId, fn($q) => $q->where('patient_id', $this->patientId));
+        $query->when($this->timeId, fn($q) => $q->where('time_id', $this->timeId));
 
         // Retrieve results
         $this->appointments = $query->get();

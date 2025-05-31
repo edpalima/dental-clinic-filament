@@ -19,10 +19,40 @@
                         class="block w-full mt-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white shadow-sm">
                 </div>
 
+                <!-- Status Filter -->
+                <div class="flex-1">
+                    <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                    <select id="status" wire:model="status"
+                        class="block w-full mt-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white shadow-sm">
+                        <option value="ALL">All</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="COMPLETED">Completed</option>
+                    </select>
+                </div>
+
+                <!-- Time Filter -->
+                <div class="flex-1">
+                    <label for="timeId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Time</label>
+                    <select id="timeId" wire:model="timeId"
+                        class="block w-full mt-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white shadow-sm">
+                        <option value="">All</option>
+                        @foreach (\App\Models\Time::all() as $time)
+                        <option value="{{ $time->id }}">{{ $time->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <!-- Buttons -->
                 <div class="flex gap-2">
-                    <x-filament::button type="submit">Generate Reports</x-filament::button>
-                    <x-filament::button wire:click="printPdf">Download Reports</x-filament::button>
+                    <x-filament::button type="submit" icon="heroicon-o-magnifying-glass">
+                        Generate Reports
+                    </x-filament::button>
+                    <x-filament::button wire:click="printPdf" icon="heroicon-o-arrow-down-tray">
+                        Download Reports
+                    </x-filament::button>
                 </div>
             </div>
         </form>
@@ -47,24 +77,28 @@
                 </thead>
                 <tbody>
                     @foreach ($appointments as $appointment)
-                        <tr>
-                            <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
-                                {{ $appointment->id }}</td>
-                            <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
-                                {{ $appointment->patient ? $appointment->patient->fullname : 'N/A' }}
-                            </td>
-                            <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
-                                {{ $appointment->doctor ? $appointment->doctor->fullname : 'N/A' }}
-                            </td>
-                            <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
-                                {{ $appointment->status }}</td>
-                            <td
-                                class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-right dark:text-white">
-                                {{ $appointment->date }}</td>
-                            <td
-                                class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-right dark:text-white">
-                                {{ $appointment->time->name }}</td>
-                        </tr>
+                    <tr>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
+                            {{ $appointment->id }}
+                        </td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
+                            {{ $appointment->patient ? $appointment->patient->fullname : 'N/A' }}
+                        </td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
+                            {{ $appointment->doctor ? $appointment->doctor->fullname : 'N/A' }}
+                        </td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 dark:text-white">
+                            {{ $appointment->status }}
+                        </td>
+                        <td
+                            class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-right dark:text-white">
+                            {{ $appointment->date }}
+                        </td>
+                        <td
+                            class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-right dark:text-white">
+                            {{ $appointment->time->name }}
+                        </td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>

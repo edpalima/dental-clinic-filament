@@ -19,6 +19,6 @@ class ListInactiveAnnouncements extends ListRecords
 
     public function getTitle(): string
     {
-        return 'Inactive Announcements'; // Your custom title
+        return 'Archived Announcements'; // Your custom title
     }
 }
